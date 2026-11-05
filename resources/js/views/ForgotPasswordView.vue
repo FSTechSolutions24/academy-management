@@ -1,0 +1,9 @@
+<script setup lang="ts">
+import { ArrowLeft, ArrowRight, CheckCircle2, KeyRound } from '@lucide/vue'
+import { ref } from 'vue'
+import api from '../api'
+import BrandLogo from '../components/BrandLogo.vue'
+const email=ref('');const loading=ref(false);const message=ref('');const error=ref('')
+async function submit(){loading.value=true;message.value='';error.value='';try{const {data}=await api.post('/forgot-password',{email:email.value});message.value=data.message}catch(e:any){error.value=e.response?.data?.message||'We could not process that request.'}finally{loading.value=false}}
+</script>
+<template><main class="auth-layout"><section class="auth-story"><BrandLogo light/><div class="story-copy"><span class="eyebrow light">SECURE ACCOUNT RECOVERY</span><h1>Find your way<br><em>back to the classroom.</em></h1><p>Reset access without exposing whether an email belongs to an academy.</p><ul><li><CheckCircle2/>Time-limited recovery link</li><li><CheckCircle2/>Protected against account discovery</li><li><CheckCircle2/>Your centre data stays untouched</li></ul></div><footer>ACADEMYHUB <span>RECOVERY PROTECTED</span></footer></section><section class="auth-panel"><div class="auth-box"><RouterLink to="/login" class="back-link"><ArrowLeft/>Back to sign in</RouterLink><span class="status-icon"><KeyRound/></span><span class="eyebrow">PASSWORD RECOVERY</span><h2>Reset your password.</h2><p>Enter the email you use for AcademyHub. We’ll send a secure reset link if an account matches.</p><form @submit.prevent="submit"><label>Email address<input v-model="email" type="email" autocomplete="email" required placeholder="you@academy.com"></label><div v-if="message" class="form-success">{{message}}</div><div v-if="error" class="form-error">{{error}}</div><button class="button primary wide" :disabled="loading">{{loading?'Sending…':'Send reset link'}}<ArrowRight/></button></form></div></section></main></template>

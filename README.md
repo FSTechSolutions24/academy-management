@@ -1,4 +1,53 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# AcademyHub
+
+AcademyHub is a bilingual, multi-tenant academy and training-centre management SaaS for the Egyptian education market. It is built as a Laravel 12 modular monolith with a Vue 3 and TypeScript interface.
+
+Local development uses XAMPP MySQL/MariaDB database `academy_management`; PHPUnit uses the separate `academy_management_test` database. Both can be inspected through phpMyAdmin. SQLite is not used.
+
+The current checkpoint includes verified identity and recovery, organisation and centre isolation, staff roles with member-specific exceptions, audit history, independent academic structure records, a platform-admin control plane and polished responsive dashboards.
+
+## Continue the build
+
+Read these in order before changing scope:
+
+1. `docs/CURRENT_STATUS.md` — exact handoff point and next safe step.
+2. `docs/MASTER_PRODUCT_PROMPT.md` — complete supplied product specification.
+3. `docs/IMPLEMENTATION_PLAN.md` — honest phase checklist and verification log.
+4. `docs/ARCHITECTURE.md` — application and deployment decisions.
+5. `docs/DATABASE_DESIGN.md` — relationship design and indexing strategy.
+6. `docs/SECURITY.md` — mandatory tenancy and security boundaries.
+7. `docs/PRODUCTION_EMAIL.md` — SMTP, sender-domain and queue-worker deployment checklist.
+
+## Local development
+
+```bash
+composer install
+npm install
+php artisan migrate
+composer run dev
+```
+
+Quality gates:
+
+```bash
+php artisan test
+npm run typecheck
+npm run build
+```
+
+Do not mark a roadmap item complete until its migration, authorisation boundary, tenant-isolation test and primary UI workflow have been verified.
+
+## Local demonstration accounts
+
+Set `ACADEMY_DEMO_PASSWORD` in the ignored `.env` file, then run:
+
+```bash
+php artisan db:seed --class=DemoAccountsSeeder
+```
+
+This creates or refreshes `superadmin@academyhub.test` and `teacher@academyhub.test` inside a fictional demo academy. Never configure this variable in production.
+
+<!-- Original Laravel framework documentation retained below for reference. -->
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>

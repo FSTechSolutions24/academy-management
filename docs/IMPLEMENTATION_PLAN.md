@@ -1,0 +1,101 @@
+# AcademyHub implementation plan
+
+This file is the resumable source of truth. A checked item is implemented and verified, not merely designed.
+
+## Phase 0 — discovery and product foundation
+
+- [x] Preserve the complete supplied specification in `MASTER_PRODUCT_PROMPT.md`.
+- [x] Audit the Laravel starter and reusable Exousia UI/tenancy patterns.
+- [x] Record architecture, domain relationships and security boundaries.
+- [x] Establish the visual system and responsive product shell.
+
+## Phase 1 — identity, tenancy and academic foundation
+
+- [x] Laravel 12 organisation, membership, branch, academic-year, level and subject schema.
+- [x] Transactional owner registration with a 14-day trial and sensible Egyptian defaults.
+- [x] Session login/logout and rate limiting.
+- [x] Organisation middleware and request-scoped context.
+- [x] Operational centre isolation: server-resolved branch context, owner centre creation/switcher and independent academic data.
+- [x] Centre-specific academic year, educational level and subject management.
+- [x] Staff invitations, role/status administration and explicit multi-centre assignments.
+- [x] System roles plus organisation-scoped custom roles with granular permission sets.
+- [x] Vue 3 + TypeScript landing, registration, login and protected dashboard.
+- [x] Signed email verification and protected password recovery.
+- [x] Explicit centre workspace switching with server-side access revalidation.
+- [ ] Complete Arabic translation catalogue and live RTL toggle.
+- [x] Audit ledger for centre, academic-structure and staff-access changes.
+- [x] Per-member allow/deny permission overrides and owner-facing filtered audit-log viewer.
+
+## Phase 2 — students and teaching operations
+
+- [ ] Student/guardian/enrolment records and concurrency-safe codes.
+- [ ] Server-paginated student directory, filters and bulk actions.
+- [ ] CSV/XLSX staged import with preview, queue progress and error workbook.
+- [ ] Groups, schedules, capacity, transfers and conflict warnings.
+- [ ] Revocable Code 128/QR cards plus A4 PDF generation.
+
+## Phase 3 — attendance
+
+- [ ] Full-screen USB scanner flow and manual fallback.
+- [ ] Idempotent attendance processing and duplicate feedback.
+- [ ] Session closure/absence job, corrections and reports.
+- [ ] Authorised-device offline queue with explicit pending state.
+
+## Phase 4 — examinations and performance
+
+- [ ] Exam targeting and expected participants.
+- [ ] Physical exam attendance and keyboard-first marks entry/import.
+- [ ] Draft/review/publish/lock workflow with correction audit.
+- [ ] Student, group and subject analytics plus early warnings.
+
+## Phase 5 — parent portal and communications
+
+- [ ] Hashed, expiring, revocable student-scoped parent links.
+- [ ] Responsive Arabic/English performance page.
+- [ ] WhatsApp consent, templates, queue, retry and delivery log.
+
+## Phase 6 — finance, subscriptions and platform admin
+
+- [ ] Fee plans, invoices, instalments, receipts, refunds and expenses.
+- [ ] Plan entitlements, trial lifecycle and Paymob abstraction.
+- [x] Super-admin fixed navigation shell and global organisation, subscription, identity, security and support overview console.
+- [ ] Super-admin plan editing, usage metering and operational write actions.
+
+## Phase 7 — reports, hardening and release
+
+- [ ] Large-dataset exports, scheduled reports and dashboard aggregates.
+- [ ] Horizon/Redis, storage, backups, monitoring and deployment guide.
+- [ ] Accessibility, RTL, responsive and performance QA.
+- [ ] Full acceptance scenario and security release gates.
+
+## Verification log
+
+- 2026-11-05: repository and environment audited; Laravel 12.71 / PHP 8.2 / Node 22 confirmed.
+- 2026-11-05: configured database migration passed for the academy foundation schema.
+- 2026-11-05: PHP suite passed: 5 tests, 12 assertions. Coverage includes transactional registration, active-membership enforcement and cross-tenant dashboard isolation.
+- 2026-11-05: Vue TypeScript check and Vite production build passed (2,132 modules; 190.37 kB main JS / 71.66 kB gzip).
+- 2026-11-05: route and live HTTP smoke checks passed (`/` returned 200; anonymous `/api/session` returned the expected unauthenticated payload).
+- 2026-11-05: Composer reported no known security advisories. Browser screenshot QA remains pending because the current environment exposed no browser or desktop surface to the UI controller.
+- 2026-11-05: product scope expanded so every branch/centre is an operational sub-tenant with independent academic, student, attendance, examination, finance, file and reporting data under one organisation subscription.
+- 2026-11-05: centre-as-workspace migration applied. Existing academic foundation records were backfilled to each organisation's head office; centre selection is stored server-side and revalidated on every operational request.
+- 2026-11-05: database-level non-null branch ownership is enforced for academic years, educational levels and subjects after legacy backfill.
+- 2026-11-05: owners can create and switch centres from the application shell. New centres start with an empty academic workspace and never inherit transactional data.
+- 2026-11-05: centre-specific academic years, levels and subjects can be created from the dashboard. Assistants are denied management writes until granular permissions are implemented.
+- 2026-11-05: verification passed with 8 PHP tests and 42 assertions, including cross-organisation isolation, cross-centre isolation, owner switching, staff assignment restrictions and independent academic structure. Vue typecheck and production build passed (2,132 modules; 203.82 kB main JS / 74.93 kB gzip).
+- 2026-11-05: local runtime moved from SQLite to the same XAMPP MySQL/MariaDB pattern as Exousia. `academy_management` is the development database and `academy_management_test` is the isolated automated-test database; both use `utf8mb4` and are available through phpMyAdmin.
+- 2026-11-05: MySQL verification exposed and fixed a migration index-order issue that SQLite had not detected. A clean MySQL migration now passes through all centre-tenancy migrations.
+- 2026-11-05: staff access slice completed: secure invitations, direct addition for existing accounts, system/custom roles, explicit centre assignment, status changes, revocation and one-time acceptance UI.
+- 2026-11-05: invitation tokens are stored only as SHA-256 hashes, expire after seven days and verify new users' email ownership on acceptance. Development mail uses the log transport until SMTP is configured.
+- 2026-11-05: audit logging covers centre creation/switching, academic years/levels/subjects, invitations, access updates and custom-role creation.
+- 2026-11-05: MySQL suite passes with 11 tests and 76 assertions; Vue typecheck and production build pass (2,136 modules; 217.49 kB main JS / 78.63 kB gzip).
+- 2026-11-06: added an explicit `is_platform_admin` identity flag and an idempotent local demo seeder. The super-admin and teacher demo accounts were created in MySQL, attached to the fictional demo academy and verified through live login/session/logout HTTP requests.
+- 2026-11-06: authentication responses now refresh the SPA's CSRF token after session regeneration, fixing subsequent protected POST requests such as logout and centre changes.
+- 2026-11-06: identity hardening completed. New owner accounts receive signed verification links and cannot enter organisation or centre routes before verification; resend and sign-out remain available.
+- 2026-11-06: added non-enumerating password recovery with expiring broker tokens, strong-password validation and modern responsive recovery screens.
+- 2026-11-06: MySQL suite passes with 15 tests and 96 assertions; Vue typecheck and production build pass (2,142 modules; 226.46 kB main JS / 81.01 kB gzip).
+- 2026-11-06: added a dedicated platform-administrator control plane. Super admins now land outside academy workspaces and see only global SaaS operations; every sidebar item opens its own working section.
+- 2026-11-06: platform routes are protected by a separate `platform_admin` boundary and tested for both privileged access and tenant-user denial. MySQL suite passes with 17 tests and 101 assertions; Vue typecheck and production build pass (2,144 modules; 241.13 kB main JS / 84.78 kB gzip).
+- 2026-11-06: completed fine-grained staff exceptions with explicit allow/deny/inherit states. Denials take precedence over role permissions and every change is audited.
+- 2026-11-06: added an organisation-scoped audit viewer with event, actor and centre filters, expandable before/after records and owner/admin authorization. Teachers are denied access.
+- 2026-11-06: documented production SMTP, sender-domain DNS, HTTPS URL and persistent queue-worker requirements in `PRODUCTION_EMAIL.md` while preserving the safe local log transport.
+- 2026-11-06: MySQL suite passes with 19 tests and 111 assertions; Vue typecheck and production build pass (2,146 modules; 247.66 kB main JS / 86.79 kB gzip).
