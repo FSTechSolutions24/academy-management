@@ -28,7 +28,7 @@ This file is the resumable source of truth. A checked item is implemented and ve
 
 ## Phase 2 — students and teaching operations
 
-- [ ] Student/guardian/enrolment records and concurrency-safe codes.
+- [x] Initial branch-scoped student/guardian/enrolment records and concurrency-safe centre codes; editing, archival and richer guardian management remain iterative work.
 - [ ] Server-paginated student directory, filters and bulk actions.
 - [ ] CSV/XLSX staged import with preview, queue progress and error workbook.
 - [ ] Groups, schedules, capacity, transfers and conflict warnings.
@@ -102,3 +102,7 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - 2026-11-06: introduced a persistent English/Arabic locale store and a live language control. The document language/direction, fixed sidebars, mobile drawers, inputs, modals and content offsets now mirror without reloading.
 - 2026-11-06: wired Arabic catalogue copy and Arabic-first data-name selection into login, registration, the academy operations shell and the platform-admin control plane. Remaining public/recovery and detailed modal copy stays explicitly tracked before the localisation checklist is closed.
 - 2026-11-06: MySQL suite remains at 19 tests and 111 assertions; Vue typecheck and production build pass (2,149 modules; 258.54 kB main JS / 91.32 kB gzip).
+- 2026-11-06: created a separate teacher operations shell and role-based dashboard redirect. Teachers now see only teaching overview, students, attendance, schedule, exams/marks and performance pages, with responsive working navigation and module-ready empty states.
+- 2026-11-06: teacher-panel production build passes (2,151 modules; 271.85 kB main JS / 95.12 kB gzip); the MySQL suite remains green at 19 tests and 111 assertions.
+- 2026-11-06: connected the teacher student directory to MySQL. Teachers with permission can register a student, primary guardian and academic enrolment transactionally, search/filter the active centre and receive concurrency-safe `STU-######` codes.
+- 2026-11-06: migration `000006` applied to local MySQL; suite passes with 21 tests and 121 assertions. Teacher UI production build passes (2,151 modules; 278.88 kB main JS / 96.90 kB gzip).

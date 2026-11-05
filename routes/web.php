@@ -9,6 +9,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\PlatformAdminController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TeamController;
 use Illuminate\Support\Facades\Route;
 
@@ -31,6 +32,10 @@ Route::prefix('api')->group(function (): void {
         Route::post('/branches', [BranchController::class, 'store']);
         Route::post('/branches/{branch}/select', [BranchController::class, 'select']);
         Route::get('/dashboard', DashboardController::class)->middleware('branch');
+        Route::middleware('branch')->prefix('students')->group(function (): void {
+            Route::get('/', [StudentController::class, 'index']);
+            Route::post('/', [StudentController::class, 'store']);
+        });
         Route::middleware('branch')->prefix('academic-structure')->group(function (): void {
             Route::get('/', [AcademicStructureController::class, 'index']);
             Route::post('/years', [AcademicStructureController::class, 'storeYear']);

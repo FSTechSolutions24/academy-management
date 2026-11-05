@@ -9,6 +9,7 @@ import VerifyEmailView from './views/VerifyEmailView.vue'
 import ForgotPasswordView from './views/ForgotPasswordView.vue'
 import ResetPasswordView from './views/ResetPasswordView.vue'
 import PlatformAdminView from './views/PlatformAdminView.vue'
+import TeacherWorkspaceView from './views/TeacherWorkspaceView.vue'
 
 const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/', component: LandingView }, { path: '/login', component: LoginView, meta: { guest: true } },
@@ -19,6 +20,7 @@ const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/accept-invite', component: AcceptInvitationView },
   { path: '/dashboard', component: DashboardView, meta: { auth: true } },
   { path: '/admin/:section?', component: PlatformAdminView, meta: { auth: true, platformAdmin: true } },
+  { path: '/teacher/:section?', component: TeacherWorkspaceView, meta: { auth: true } },
 ]})
 router.beforeEach(async (to) => {
   const auth = useAuthStore()

@@ -29,6 +29,9 @@ Last updated: 2026-11-06 (Africa/Cairo)
 - The forgot-password journey, including its privacy-preserving success message, is fully translated into Arabic.
 - Idempotent local demo-account seeder with one platform-super-admin identity and one centre-scoped teacher identity. The shared local password is read only from the ignored `.env` file.
 - Dedicated fixed platform-admin shell: global command centre, academy directory, subscription lifecycle, user/access directory, security/audit, support and platform settings. Super admins are redirected away from teaching and centre menus.
+- Dedicated responsive teacher workspace with role-based redirect and working navigation for teaching overview, assigned students, attendance, weekly schedule, exams/marks and performance. Teacher navigation excludes finance, staff administration, academy settings and platform operations.
+- Teacher page foundations include useful empty states, quick actions, student filters, attendance scanner launch, weekly schedule and performance placeholders ready for the Phase 2/3 data modules.
+- Working branch-scoped student directory for teachers with search and level filters, transactional registration, concurrency-safe centre codes, primary guardian linkage, academic enrolment and audit logging.
 - Platform overview API is protected independently of tenant membership; ordinary academy users receive a forbidden response.
 - Complete product prompt, architecture, database design, security rules and phased plan are tracked in `docs/`.
 
@@ -36,8 +39,8 @@ Last updated: 2026-11-06 (Africa/Cairo)
 
 - Runtime database: XAMPP MariaDB/MySQL at `127.0.0.1:3306`, database `academy_management`, accessible in phpMyAdmin.
 - Automated test database: separate MySQL database `academy_management_test`; SQLite is not used.
-- Database migrations: all applied through `2026_11_06_000005_add_platform_admin_to_users`.
-- Backend: 19 tests, 111 assertions passing on MySQL.
+- Database migrations: all applied through `2026_11_06_000006_create_student_foundation_tables`.
+- Backend: 21 tests, 121 assertions passing on MySQL.
 - Frontend: Vue TypeScript check and Vite production build passing.
 - Composer audit: no known advisories at the last audit.
 - Visual screenshot QA: pending because the current automation environment exposed no browser surface.

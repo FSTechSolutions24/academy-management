@@ -53,7 +53,10 @@ const nav = [
 
 async function loadDashboard() {
   loading.value = true
-  try { data.value = (await api.get('/dashboard')).data } finally { loading.value = false }
+  try {
+    data.value = (await api.get('/dashboard')).data
+    if (data.value.membership?.role === 'teacher') { await router.replace('/teacher/overview'); return }
+  } finally { loading.value = false }
 }
 
 async function switchBranch(branch: Branch) {
