@@ -23,6 +23,10 @@ Last updated: 2026-11-06 (Africa/Cairo)
 - Organisation-scoped, read-only audit viewer with event, actor and centre filters plus expandable before/after metadata. Teachers cannot access it.
 - Audit events for centre creation/switching, academic setup, staff invitations, staff access changes and custom roles.
 - Production SMTP, sender-domain, DNS and queue-worker setup is documented in `PRODUCTION_EMAIL.md`; local development intentionally remains on the log mailer.
+- Persistent browser-level English/Arabic locale switch with live document `lang`/`dir` updates and mirrored fixed-sidebar, mobile drawer, forms, modals and dashboard layout rules.
+- Arabic catalogue is wired into login, registration, the academy workspace and the platform-admin navigation/control-plane shell; Arabic mode prefers Arabic tenant and academic names with safe fallbacks.
+- The email-verification journey is fully translated and responds live to the English/Arabic switch.
+- The forgot-password journey, including its privacy-preserving success message, is fully translated into Arabic.
 - Idempotent local demo-account seeder with one platform-super-admin identity and one centre-scoped teacher identity. The shared local password is read only from the ignored `.env` file.
 - Dedicated fixed platform-admin shell: global command centre, academy directory, subscription lifecycle, user/access directory, security/audit, support and platform settings. Super admins are redirected away from teaching and centre menus.
 - Platform overview API is protected independently of tenant membership; ordinary academy users receive a forbidden response.
@@ -40,9 +44,9 @@ Last updated: 2026-11-06 (Africa/Cairo)
 
 ## Next safe implementation step
 
-Finish localisation before student records:
+Finish the remaining localisation surface before student records:
 
-1. Full Arabic catalogue and live RTL/LTR switch.
+1. Translate the public landing page, recovery/verification pages and the detailed team/audit modal copy using the established locale catalogue.
 2. Then begin the branch-scoped student/guardian/enrolment vertical slice.
 
 Start every future session by reading `CURRENT_STATUS.md`, `IMPLEMENTATION_PLAN.md`, `SECURITY.md` and the relevant part of `MASTER_PRODUCT_PROMPT.md`.

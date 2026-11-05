@@ -8,6 +8,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import api from '../api'
 import { useAuthStore } from '../stores/auth'
+import { useLocaleStore } from '../stores/locale'
 import BrandLogo from '../components/BrandLogo.vue'
 import TeamModal from '../components/TeamModal.vue'
 import AuditLogModal from '../components/AuditLogModal.vue'
@@ -22,6 +23,7 @@ type Branch = {
 }
 
 const auth = useAuthStore()
+const locale = useLocaleStore()
 const router = useRouter()
 const data = ref<any>(null)
 const loading = ref(true)
@@ -113,42 +115,42 @@ onMounted(loadDashboard)
       <div class="centre-switcher">
         <button class="workspace-switch" :aria-expanded="branchMenu" @click="branchMenu = !branchMenu">
           <span>{{ branchInitials }}</span>
-          <div><small>ACTIVE CENTRE</small><b>{{ data?.branch.name_en || data?.branch.name_ar || 'Loading…' }}</b></div>
+          <div><small>{{locale.tr('ACTIVE CENTRE')}}</small><b>{{ locale.locale==='ar'?(data?.branch.name_ar||data?.branch.name_en):(data?.branch.name_en||data?.branch.name_ar) || 'Loading…' }}</b></div>
           <ChevronDown :class="{ rotated: branchMenu }" />
         </button>
         <div v-if="branchMenu && data" class="centre-menu">
-          <div class="centre-menu-head"><span><small>YOUR CENTRES</small><b>Switch workspace</b></span><em>{{ data.branches.length }}</em></div>
+          <div class="centre-menu-head"><span><small>{{locale.tr('YOUR CENTRES')}}</small><b>{{locale.tr('Switch workspace')}}</b></span><em>{{ data.branches.length }}</em></div>
           <button v-for="branch in data.branches" :key="branch.public_id" class="centre-option" :class="{ active: branch.public_id === data.branch.public_id }" @click="switchBranch(branch)">
             <span>{{ (branch.name_en || branch.name_ar).slice(0, 2).toUpperCase() }}</span>
-            <div><b>{{ branch.name_en || branch.name_ar }}</b><small><MapPin />{{ [branch.city, branch.governorate].filter(Boolean).join(', ') || 'Location not set' }}</small></div>
+            <div><b>{{ locale.locale==='ar'?(branch.name_ar||branch.name_en):(branch.name_en||branch.name_ar) }}</b><small><MapPin />{{ [branch.city, branch.governorate].filter(Boolean).join(', ') || 'Location not set' }}</small></div>
             <Check v-if="branch.public_id === data.branch.public_id" />
             <i v-else-if="switching === branch.public_id"></i>
           </button>
-          <button class="create-centre-link" @click="createOpen = true"><Plus />Create another centre</button>
+          <button class="create-centre-link" @click="createOpen = true"><Plus />{{locale.tr('Create another centre')}}</button>
         </div>
       </div>
 
       <nav>
-        <small>CENTRE WORKSPACE</small>
+        <small>{{locale.tr('CENTRE WORKSPACE')}}</small>
         <a v-for="([label, Icon], index) in nav" :key="String(label)" :class="{ active: index === 0 }" href="#" @click.prevent="openNavigation(label)">
-          <component :is="Icon" />{{ label }}<em v-if="label === 'Students'">0</em>
+          <component :is="Icon" />{{ locale.tr(String(label)) }}<em v-if="label === 'Students'">0</em>
         </a>
-        <small>SETUP</small><a href="#" @click.prevent="openAcademic()"><BookOpen />Academic structure</a><a href="#"><Settings />Settings</a>
+        <small>{{locale.tr('SETUP')}}</small><a href="#" @click.prevent="openAcademic()"><BookOpen />{{locale.tr('Academic structure')}}</a><a href="#"><Settings />{{locale.tr('Settings')}}</a>
       </nav>
-      <div class="sidebar-foot"><span>{{ auth.user?.name.slice(0, 2).toUpperCase() }}</span><div><b>{{ auth.user?.name }}</b><small>Organisation owner</small></div><button @click="logout"><LogOut /></button></div>
+      <div class="sidebar-foot"><span>{{ auth.user?.name.slice(0, 2).toUpperCase() }}</span><div><b>{{ auth.user?.name }}</b><small>{{locale.tr('Organisation owner')}}</small></div><button :title="locale.tr('Sign out')" @click="logout"><LogOut /></button></div>
     </aside>
 
     <main class="dashboard-main">
-      <header><button class="mobile-nav" @click="menu = true"><Menu /></button><div class="global-search"><Search /><input placeholder="Search this centre…"><kbd>⌘ K</kbd></div><div class="header-actions"><button><Bell /><i></i></button><span>EN</span></div></header>
-      <div v-if="loading" class="loading-state"><span></span>Preparing your centre workspace…</div>
+      <header><button class="mobile-nav" @click="menu = true"><Menu /></button><div class="global-search"><Search /><input :placeholder="locale.tr('Search this centre…')"><kbd>⌘ K</kbd></div><div class="header-actions"><button><Bell /><i></i></button><span>{{locale.locale.toUpperCase()}}</span></div></header>
+      <div v-if="loading" class="loading-state"><span></span>{{locale.tr('Preparing your centre workspace…')}}</div>
       <div v-else class="dashboard-content">
-        <div class="branch-context-banner"><span><Building2 /></span><div><small>CURRENT CENTRE</small><b>{{ data.branch.name_en || data.branch.name_ar }}</b><p>All students, years, attendance, exams and finance below belong only to this centre.</p></div><em v-if="data.branch.is_head_office">Head office</em></div>
-        <div class="page-heading"><div><span>THURSDAY, 5 NOVEMBER</span><h1>Good evening, {{ auth.user?.name.split(' ')[0] }}.</h1><p>Here’s what’s happening at {{ data.branch.name_en || data.branch.name_ar }} today.</p></div><button class="button primary">+ Add student</button></div>
+        <div class="branch-context-banner"><span><Building2 /></span><div><small>{{locale.tr('CURRENT CENTRE')}}</small><b>{{ locale.locale==='ar'?(data.branch.name_ar||data.branch.name_en):(data.branch.name_en||data.branch.name_ar) }}</b><p>{{locale.tr('All students, years, attendance, exams and finance below belong only to this centre.')}}</p></div><em v-if="data.branch.is_head_office">{{locale.tr('Head office')}}</em></div>
+        <div class="page-heading"><div><span>{{new Intl.DateTimeFormat(locale.locale==='ar'?'ar-EG':'en-GB',{dateStyle:'full'}).format(new Date())}}</span><h1>{{locale.tr('Good evening')}}، {{ auth.user?.name.split(' ')[0] }}.</h1><p>{{locale.tr('Here’s what’s happening at')}} {{ locale.locale==='ar'?(data.branch.name_ar||data.branch.name_en):(data.branch.name_en||data.branch.name_ar) }} {{locale.tr('today.')}}</p></div><button class="button primary">+ {{locale.tr('Add student')}}</button></div>
         <section class="stats-grid"><article v-for="stat in data.stats" :key="stat.label" :class="stat.tone"><span><component :is="stat.label.includes('student') ? Users : stat.label.includes('Attendance') ? QrCode : stat.label.includes('result') ? BarChart3 : CreditCard" /></span><small>{{ stat.label }}</small><b>{{ stat.value }}</b><em>{{ stat.change }}</em></article></section>
         <section class="dashboard-grid">
-          <article class="setup-card"><div class="card-head"><div><span class="eyebrow">CENTRE SETUP</span><h2>Set up this centre</h2><p>Every centre has its own independent academic structure.</p></div><div class="progress-ring"><b>{{ completed }}<small>/6</small></b></div></div><div class="progress"><i :style="{ width: (completed / 6 * 100) + '%' }"></i></div><ul><li v-for="(item, index) in data.setup" :key="item.label" :class="{ done: item.done }"><span>{{ item.done ? '✓' : Number(index) + 1 }}</span><b>{{ item.label }}</b><button v-if="!item.done && ['Academic year','Educational levels','Subjects'].includes(item.label)" @click="openAcademic(item.label)">Set up →</button><button v-else-if="!item.done">Coming next</button></li></ul></article>
-          <article class="today-card"><div class="card-head"><div><span class="eyebrow">TODAY’S PULSE</span><h2>Your first teaching day starts here</h2></div><CalendarDays /></div><div class="empty-illustration"><div><i></i><i></i><i></i></div><b>No sessions scheduled yet</b><p>Create a teaching group and its weekly schedule to see this centre’s classes here.</p><button class="button secondary">Create teaching group</button></div></article>
-          <article class="subjects-card"><div class="card-head"><div><span class="eyebrow">ACADEMIC STRUCTURE</span><h2>{{ data.academic_year ? 'Ready to organise learning' : 'This centre is a clean slate' }}</h2></div><GraduationCap /></div><div v-if="data.academic_year" class="year-row"><span><CalendarDays /></span><div><small>ACTIVE ACADEMIC YEAR</small><b>{{ data.academic_year.name }}</b></div><em>Active</em></div><div v-else class="clean-slate"><BookOpen /><div><b>No academic year yet</b><p>Add this centre’s first year, levels and subjects.</p></div></div><div class="subject-list"><span v-for="subject in data.subjects" :key="subject.id"><i :style="{ background: subject.color }"></i><b>{{ subject.name_en }}</b><small>{{ subject.code }}</small></span></div></article>
+          <article class="setup-card"><div class="card-head"><div><span class="eyebrow">{{locale.tr('CENTRE SETUP')}}</span><h2>{{locale.tr('Set up this centre')}}</h2><p>{{locale.tr('Every centre has its own independent academic structure.')}}</p></div><div class="progress-ring"><b>{{ completed }}<small>/6</small></b></div></div><div class="progress"><i :style="{ width: (completed / 6 * 100) + '%' }"></i></div><ul><li v-for="(item, index) in data.setup" :key="item.label" :class="{ done: item.done }"><span>{{ item.done ? '✓' : Number(index) + 1 }}</span><b>{{locale.tr(item.label)}}</b><button v-if="!item.done && ['Academic year','Educational levels','Subjects'].includes(item.label)" @click="openAcademic(item.label)">{{locale.tr('Set up')}} →</button><button v-else-if="!item.done">{{locale.tr('Coming next')}}</button></li></ul></article>
+          <article class="today-card"><div class="card-head"><div><span class="eyebrow">{{locale.tr('TODAY’S PULSE')}}</span><h2>{{locale.tr('Your first teaching day starts here')}}</h2></div><CalendarDays /></div><div class="empty-illustration"><div><i></i><i></i><i></i></div><b>{{locale.tr('No sessions scheduled yet')}}</b><p>{{locale.tr('Create a teaching group and its weekly schedule to see this centre’s classes here.')}}</p><button class="button secondary">{{locale.tr('Create teaching group')}}</button></div></article>
+          <article class="subjects-card"><div class="card-head"><div><span class="eyebrow">{{locale.tr('ACADEMIC STRUCTURE')}}</span><h2>{{locale.tr(data.academic_year ? 'Ready to organise learning' : 'This centre is a clean slate')}}</h2></div><GraduationCap /></div><div v-if="data.academic_year" class="year-row"><span><CalendarDays /></span><div><small>{{locale.tr('ACTIVE ACADEMIC YEAR')}}</small><b>{{ data.academic_year.name }}</b></div><em>{{locale.tr('Active')}}</em></div><div v-else class="clean-slate"><BookOpen /><div><b>{{locale.tr('No academic year yet')}}</b><p>{{locale.tr('Add this centre’s first year, levels and subjects.')}}</p></div></div><div class="subject-list"><span v-for="subject in data.subjects" :key="subject.id"><i :style="{ background: subject.color }"></i><b>{{ locale.locale==='ar'?(subject.name_ar||subject.name_en):(subject.name_en||subject.name_ar) }}</b><small>{{ subject.code }}</small></span></div></article>
           <article class="activity-card"><div class="card-head"><div><span class="eyebrow">CENTRE ACTIVITY</span><h2>A clear record from day one</h2></div></div><div class="activity"><span>✓</span><div><b>Centre workspace active</b><p>Data on this screen is isolated from your other centres.</p><small>Now</small></div></div><div class="activity"><span>+</span><div><b>{{ data.subjects.length ? 'Academic defaults ready' : 'Ready for centre setup' }}</b><p>{{ data.subjects.length ? 'Year, levels and subjects are ready to edit.' : 'Start by creating an academic year.' }}</p><small>Now</small></div></div></article>
         </section>
       </div>

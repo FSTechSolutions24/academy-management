@@ -99,3 +99,6 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - 2026-11-06: added an organisation-scoped audit viewer with event, actor and centre filters, expandable before/after records and owner/admin authorization. Teachers are denied access.
 - 2026-11-06: documented production SMTP, sender-domain DNS, HTTPS URL and persistent queue-worker requirements in `PRODUCTION_EMAIL.md` while preserving the safe local log transport.
 - 2026-11-06: MySQL suite passes with 19 tests and 111 assertions; Vue typecheck and production build pass (2,146 modules; 247.66 kB main JS / 86.79 kB gzip).
+- 2026-11-06: introduced a persistent English/Arabic locale store and a live language control. The document language/direction, fixed sidebars, mobile drawers, inputs, modals and content offsets now mirror without reloading.
+- 2026-11-06: wired Arabic catalogue copy and Arabic-first data-name selection into login, registration, the academy operations shell and the platform-admin control plane. Remaining public/recovery and detailed modal copy stays explicitly tracked before the localisation checklist is closed.
+- 2026-11-06: MySQL suite remains at 19 tests and 111 assertions; Vue typecheck and production build pass (2,149 modules; 258.54 kB main JS / 91.32 kB gzip).
