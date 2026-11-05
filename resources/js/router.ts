@@ -10,6 +10,9 @@ import ForgotPasswordView from './views/ForgotPasswordView.vue'
 import ResetPasswordView from './views/ResetPasswordView.vue'
 import PlatformAdminView from './views/PlatformAdminView.vue'
 import TeacherWorkspaceView from './views/TeacherWorkspaceView.vue'
+import PlatformSettingsView from './views/PlatformSettingsView.vue'
+import TeacherAttendanceView from './views/TeacherAttendanceView.vue'
+import ParentPortalView from './views/ParentPortalView.vue'
 
 const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/', component: LandingView }, { path: '/login', component: LoginView, meta: { guest: true } },
@@ -18,8 +21,11 @@ const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/reset-password/:token', component: ResetPasswordView, meta: { guest: true } },
   { path: '/verify-email', component: VerifyEmailView, meta: { verification: true } },
   { path: '/accept-invite', component: AcceptInvitationView },
+  { path: '/parent/:token', component: ParentPortalView },
   { path: '/dashboard', component: DashboardView, meta: { auth: true } },
+  { path: '/admin/settings/plans', component: PlatformSettingsView, meta: { auth: true, platformAdmin: true } },
   { path: '/admin/:section?', component: PlatformAdminView, meta: { auth: true, platformAdmin: true } },
+  { path: '/teacher/attendance', component: TeacherAttendanceView, meta: { auth: true } },
   { path: '/teacher/:section?', component: TeacherWorkspaceView, meta: { auth: true } },
 ]})
 router.beforeEach(async (to) => {

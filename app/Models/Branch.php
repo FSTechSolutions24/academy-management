@@ -44,4 +44,9 @@ class Branch extends Model
     {
         return $this->hasMany(Student::class);
     }
+
+    public function teachingGroups(): HasMany
+    {
+        return $this->hasMany(TeachingGroup::class);
+    }
 }

@@ -2159,7 +2159,24 @@ The application is not considered complete until the following end-to-end scenar
 
 ---
 
-## 35. Required Deliverables
+## 35. Egypt-market competitiveness requirements (added 2026-11-06)
+
+Benchmarking Egyptian centre products shows that a credible alternative must make the daily front-desk workflow faster than paper, Excel and WhatsApp. Keep these requirements in the queued roadmap:
+
+- Arabic-first mobile/PWA operation with reliable RTL, fast search and large touch targets.
+- QR/barcode attendance with manual fallback, duplicate-safe processing, late/absence states and instant parent notifications.
+- Student profile, groups, schedules, capacity, transfers, guardian portal, attendance history and academic results in one timeline.
+- Fees, instalments, discounts, outstanding balances, receipts and cash/Fawry/card payment reconciliation with branch-level reporting.
+- Parent communication centre with consent, templates, delivery status, WhatsApp-ready messages and in-app announcements.
+- Offline-ready attendance/marks/payment queue with explicit pending and conflict states; never claim a record synced until the server confirms it.
+- Online registration/application intake, staged CSV/XLSX import with duplicate detection, and printable QR cards.
+- Optional student portal for lessons, homework and timed online exams, while keeping the core centre operations usable without an LMS.
+- Owner dashboards for daily collections, attendance, debtors, teacher workload, retention and branch comparison, with exportable reports.
+- Differentiation: transparent per-centre tenancy, granular audit/security controls, bilingual UX, parent privacy by default and an Arabic operational assistant that only answers from authorised centre data.
+
+Prioritise the operational wedge in this order: student editing/archival → groups and schedules → attendance → fees/collections → parent notifications/portal → exams and online learning → analytics/assistant.
+
+## 36. Required Deliverables
 
 Produce:
 
@@ -2185,7 +2202,7 @@ Include sample demonstration data in development environments only.
 
 ---
 
-## 36. How You Must Work
+## 37. How You Must Work
 
 Before writing implementation code:
 
