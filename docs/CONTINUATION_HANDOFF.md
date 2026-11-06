@@ -36,27 +36,27 @@ If the database is empty, use the project’s existing seeders rather than manua
 - Organisation and multi-centre tenancy with server-side context validation.
 - Owner/admin/teacher/assistant/reception/finance roles, custom permissions and centre assignments.
 - Invitation acceptance, permission exceptions and audit history.
-- Teacher workspace with student directory, registration, editing and archival.
+- Teacher workspace with a branch-scoped student directory, registration/editing, guardian contact management for up to five linked guardians, primary-contact selection and archival.
 - Teaching groups, enrolments, recurring schedules and overlap validation.
 - Attendance sessions, scanner records, duplicate-safe scans, closure/absence finalisation and manual bulk marking.
 - Parent access links with hashed, expiring and revocable tokens plus a bilingual parent portal.
 - Platform-admin console with tenant, identity, security, support and plan settings sections.
 - Starter, Growth and Academy subscription plans with centre/student/staff/group limits.
 - Encrypted Paymob settings and checkout/callback foundation; real checkout still needs merchant credentials and production verification.
-- English/Arabic locale files at `resources/lang/en.json` and `resources/lang/ar.json`, persistent language toggle, live DOM translation and RTL layout support.
+- English/Arabic locale files at `resources/lang/en.json` and `resources/lang/ar.json` with 258 matching keys, persistent language toggle, explicit attendance desk translations, live DOM translation and RTL layout support.
 
 ## Current verification baseline
 
 - MySQL backend suite: 27 tests, 162 assertions passing.
-- Vue typecheck and Vite production build: passing, 2,161 modules.
-- Latest frontend output: approximately 310.96 kB main JS, 105.08 kB gzip.
+- Vue typecheck and Vite production build: passing, 2,166 modules.
+- Latest frontend output: 332.79 kB main JS, 111.13 kB gzip.
 - Composer audit: no known advisories at the last check.
 - Browser screenshot QA is still pending because the previous environment had no browser surface.
 
 ## Remaining work, in priority order
 
 1. Finish the translation audit page by page. Replace remaining hard-coded template strings with `locale.tr(...)` where practical, and add every user-facing phrase to both JSON files. Keep API values, names and codes untouched. Verify Arabic text, placeholders, modals and RTL spacing in a real browser.
-2. Complete teacher operations: richer guardian editing, student bulk actions, CSV/XLSX staged import, validation/error workbook, and revocable Code 128/QR student cards with A4 PDF output.
+2. Complete teacher operations: staged CSV/XLSX import is implemented with preview, queued progress and formula-safe error CSV; bulk archival, imports and student cards still need authorization/isolation tests. Student cards now support reissue/revocation, hashed tokens, Code 128 A4 print/save-as-PDF and attendance scan lookup.
 3. Complete attendance production workflow: idempotency/correction history, reports, background closure jobs and an authorised-device offline queue.
 4. Build examinations and performance: exam targeting, keyboard-first marks entry/import, draft/review/publish/lock states, analytics and early warnings.
 5. Finish parent communications: performance detail page, WhatsApp consent/templates/queue/retry/delivery log.
@@ -74,4 +74,4 @@ If the database is empty, use the project’s existing seeders rather than manua
 
 ## Recommended first continuation task
 
-Run the application, switch to Arabic, and inspect every route as both super admin and teacher. Record untranslated strings and RTL defects in a short checklist, then close the translation gap before starting the next business module.
+Continue Phase 3 attendance hardening with idempotency and correction history. Automated authorization/isolation coverage is still needed for student imports, bulk archival and cards. Then continue the browser-based Arabic/English route audit; visual browser QA is still pending because no browser automation surface is available here.

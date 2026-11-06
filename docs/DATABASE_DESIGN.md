@@ -22,6 +22,8 @@
 - Communications: templates, consent records and message deliveries reference organisation and student/guardian context.
 - Platform: plans are global; subscriptions, usage and gateway attempts belong to organisations; platform actions are separately audited.
 
+- student_imports and student_import_rows stage private, branch-scoped CSV/XLSX uploads, row validation outcomes and queued processing progress.
+
 ## Required indexing pattern
 
 Every operational table starts indexes with `(organization_id, branch_id)`. High-volume lists add composite indexes matching filters, such as `(organization_id, branch_id, status, created_at)`, student code and normalized guardian phone. Uniqueness that belongs to a centre includes `branch_id`. Foreign keys never substitute for authorisation.

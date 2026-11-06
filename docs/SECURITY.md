@@ -23,3 +23,6 @@
 21. Password-recovery requests must return the same response for known and unknown addresses. Use expiring, single-use password-broker tokens and rotate the remember token after reset.
 22. Store member-specific permission exceptions as separate allow and deny lists. A deny must take precedence over both the role baseline and individual allows; owner access cannot be edited through this workflow.
 23. Scope audit queries to the resolved organisation before applying event, actor or centre filters. Audit history is read-only and unavailable to ordinary teaching roles.
+
+24. Stage student imports only in private storage; enforce upload/row/expanded-XLSX limits, reject spreadsheet formulas, scope every batch to the active organisation and branch, recheck import permission on each endpoint, and neutralize formula-leading cells in downloadable error CSVs.
+25. Store only SHA-256 hashes of student-card tokens; return a new token only in the one-time issuance response, revoke the previous token transactionally on reissue, scope issuance/revocation/scans to the active organisation and branch, and audit card lifecycle actions.

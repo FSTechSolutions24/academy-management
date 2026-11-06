@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Support\BranchAccess;
 use App\Support\BranchContext;
 use App\Support\OrganizationContext;
+use App\Services\PermissionService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function __invoke(Request $request, OrganizationContext $context, BranchContext $branchContext, BranchAccess $access): JsonResponse
+    public function __invoke(Request $request, OrganizationContext $context, BranchContext $branchContext, BranchAccess $access, PermissionService $permissions): JsonResponse
     {
         $organization = $context->get();
         $branch = $branchContext->get();
@@ -20,6 +21,11 @@ class DashboardController extends Controller
             'membership' => [
                 'role' => $membership->role,
                 'role_name' => $membership->roleDefinition?->name ?? ucfirst(str_replace('_', ' ', $membership->role)),
+                'capabilities' => [
+                    'archive_students' => $permissions->has($membership, 'archive_students'),
+                    'import_students' => $permissions->has($membership, 'import_students'),
+                    'edit_students' => $permissions->has($membership, 'edit_students'),
+                ],
             ],
             'organization' => $organization->only(['public_id', 'name_ar', 'name_en', 'preferred_locale', 'currency', 'subscription_status', 'trial_ends_at']),
             'branch' => $branch->only(['public_id', 'name_ar', 'name_en', 'governorate', 'city', 'is_head_office']),

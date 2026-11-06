@@ -30,13 +30,14 @@ This file is the resumable source of truth. A checked item is implemented and ve
 
 ## Phase 2 — students and teaching operations
 
-- [x] Initial branch-scoped student/guardian/enrolment records and concurrency-safe centre codes; editing, archival and richer guardian management remain iterative work.
+- [x] Branch-scoped student, guardian and enrolment records with concurrency-safe centre codes; student editing and archival are audited.
 - [x] Teacher student record editing and archival with branch-scoped authorization and audit events.
-- [ ] Server-paginated student directory, filters and bulk actions.
-- [ ] CSV/XLSX staged import with preview, queue progress and error workbook.
+- [x] Manage up to five student guardian contacts with relationship labels, primary-contact selection and per-student link removal.
+- [ ] Server-paginated student directory, filters and bulk actions (search, level filters, pagination and permission-gated bulk archival are implemented; automated authorization/isolation coverage remains).
+- [ ] CSV/XLSX staged import with preview, queue progress and error workbook (private CSV/XLSX preview, queued import and formula-safe CSV error report are implemented; automated authorization/isolation coverage remains).
 - [x] Initial branch-scoped teaching groups with academic links, capacity tracking and active enrolment counts.
 - [x] Recurring group schedules with branch overlap conflict validation and teacher-readable schedule API.
-- [ ] Revocable Code 128/QR cards plus A4 PDF generation.
+- [ ] Revocable Code 128 student cards with A4 print/save-as-PDF, hashed card tokens and attendance scanner lookup (automated authorization/isolation coverage remains).
 
 ## Phase 3 — attendance
 
@@ -134,3 +135,11 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - 2026-11-06: expanded the locale catalogue for the live attendance desk and Paymob plan settings, retained persistent English/Arabic switching and verified RTL-aware production build (2,155 modules; 296.11 kB main JS / 101.43 kB gzip).
 - 2026-11-06: expanded `resources/lang/en.json` and `resources/lang/ar.json` to 204 shared keys covering teacher, attendance, platform, plans, authentication, parent and landing-page copy. The locale store now translates normalized embedded phrases and common fallback words; JSON validation and the Vue/Vite production build pass (2,161 modules; 310.96 kB main JS / 105.08 kB gzip).
 - 2026-11-06: added `CONTINUATION_HANDOFF.md` with cross-device setup instructions, current architecture, verification baseline, known caveats and the prioritized remaining queue.
+
+- 2026-11-06: continued the bilingual route audit for the teacher attendance desk; added matching English/Arabic catalogue entries and explicit `locale.tr(...)` calls for its primary headings. Vue typecheck and Vite production build pass (2,161 modules; 312.62 kB main JS / 105.51 kB gzip). Browser-based RTL visual QA remains pending because this environment exposes no browser automation surface.
+
+- 2026-11-06: added multi-guardian editing to student registration and profiles. API validates guardian contact lists, scopes contact matching to the active organisation and syncs associations only on the server-resolved branch student. Vue typecheck/Vite production build pass (2,161 modules; 315.59 kB main JS / 106.28 kB gzip); PHP syntax check passes. Automated tests were not run in this step.
+
+- 2026-11-06: implemented permission-gated bulk student archival with page selection, server-resolved branch/organisation scoping, a 100-student request limit and one audit event per changed student. Vue typecheck/Vite build and PHP syntax checks pass (2,161 modules; 317.70 kB main JS / 106.94 kB gzip). Automated authorization/isolation tests were not run, so the roadmap item remains unchecked pending that verification.
+
+- 2026-11-06: added private CSV/XLSX student import staging, per-row validation preview, explicit commit, 100-row queue processing with progress, and a formula-safe CSV error report. Migration 2026_11_06_000013 is applied. Vue typecheck/Vite build and PHP syntax checks pass (2,163 modules; 328.71 kB main JS / 109.78 kB gzip). Automated authorization/isolation tests were not run, so the checklist item remains unchecked pending verification.

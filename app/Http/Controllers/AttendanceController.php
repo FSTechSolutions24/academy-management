@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttendanceSession;
+use App\Models\Student;
+use App\Models\StudentCard;
 use App\Services\AuditLogger;
 use App\Services\PermissionService;
 use App\Support\BranchContext;
@@ -41,7 +43,14 @@ class AttendanceController extends Controller
         $session = AttendanceSession::where('branch_id', $branch->id)->whereKey($sessionId)->firstOrFail();
         abort_if($session->status !== 'open', 422, 'This attendance session is closed.');
         $data = $request->validate(['student_code' => ['required', 'string', 'max:40'], 'status' => ['nullable', Rule::in(['present', 'late', 'excused'])]]);
-        $student = $session->group->students()->where('students.branch_id', $branch->id)->where('students.student_code', $data['student_code'])->wherePivot('status', 'active')->first();
+        $student = $session->group->students()->where('students.organization_id', $session->organization_id)->where('students.branch_id', $branch->id)->where('students.student_code', $data['student_code'])->wherePivot('status', 'active')->first();
+        if (!$student) {
+            $tokenHash = hash('sha256', $data['student_code']);
+            $card = StudentCard::where('organization_id', $session->organization_id)->where('branch_id', $branch->id)->where('token_hash', $tokenHash)->where('status', 'active')->first();
+            if ($card && hash_equals($card->token_hash, $tokenHash)) {
+                $student = $session->group->students()->where('students.organization_id', $session->organization_id)->where('students.branch_id', $branch->id)->where('students.id', $card->student_id)->wherePivot('status', 'active')->first();
+            }
+        }
         abort_unless($student, 404, 'Student is not enrolled in this group.');
         $duplicate = $session->records()->where('student_id', $student->id)->exists();
         $record = DB::transaction(function () use ($session, $student, $data, $request) {

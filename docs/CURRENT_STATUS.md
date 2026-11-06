@@ -33,8 +33,9 @@ For moving the project to another device, start with [`CONTINUATION_HANDOFF.md`]
 - Dedicated fixed platform-admin shell: global command centre, academy directory, subscription lifecycle, user/access directory, security/audit, support and platform settings. Super admins are redirected away from teaching and centre menus.
 - Dedicated responsive teacher workspace with role-based redirect and working navigation for teaching overview, assigned students, attendance, weekly schedule, exams/marks and performance. Teacher navigation excludes finance, staff administration, academy settings and platform operations.
 - Teacher page foundations include useful empty states, quick actions, student filters, attendance scanner launch, weekly schedule and performance placeholders ready for the Phase 2/3 data modules.
-- Working branch-scoped student directory for teachers with search, level filters and server-backed pagination, transactional registration, concurrency-safe centre codes, primary guardian linkage, academic enrolment and audit logging.
+- Working branch-scoped student directory for teachers with search, level filters, server-backed pagination and permission-gated bulk archival. Bulk archive is branch-scoped and creates one audit event per archived student; authorization tests remain pending. Student profiles support up to five guardian contacts, relationship labels, primary-contact selection and removal from the student link.
 - Teacher-authorized student editing and archival now update active enrolments safely and write auditable events.
+- CSV/XLSX student imports support private staging, row-level previews, 100-row queued processing, progress polling and a formula-safe CSV error report. Automated authorization and tenant-isolation tests remain pending.
 - Branch-scoped teaching groups now have academic links, unique centre codes, capacity metadata, active enrolment counts and audited owner/admin creation/listing APIs.
 - Teaching groups now support recurring branch schedules with day/time/mode/room data, overlap conflict validation and teacher-readable schedule APIs.
 - Super-admin commercial settings now include Starter, Growth and Academy plans with centre/student/staff/group limits, editable pricing/features, and encrypted Paymob credential configuration at `/admin/settings/plans`.
@@ -44,8 +45,9 @@ For moving the project to another device, start with [`CONTINUATION_HANDOFF.md`]
 - Secure parent access links now use random one-time-displayed tokens stored only as hashes, with expiry, revocation and a privacy-limited student view.
 - Public bilingual parent portal is now available at `/parent/{token}` with a polished responsive summary card, expiry/revocation state and live RTL switching.
 - Teacher attendance desk is now connected at `/teacher/attendance` with session creation, group selection, scanner input, duplicate feedback and close-session controls.
+- Student card lifecycle now supports branch-scoped bulk issue/reissue/revoke, SHA-256 token storage, one-time raw-token delivery for Code 128 printing, A4 print/save-as-PDF, audit events and attendance scanning by active card token or legacy student code. Migration `2026_11_06_000014_create_student_cards_table` is applied; automated authorization/isolation coverage remains pending.
 - Localization now uses a clean English/Arabic catalogue, a persistent globe-style switch and a live DOM pass for hard-coded labels, buttons, placeholders and titles; document-level RTL mirrors sidebars, forms, tables, modals and parent views.
-- Translation catalogues are maintained explicitly in [`resources/lang/en.json`](../resources/lang/en.json) and [`resources/lang/ar.json`](../resources/lang/ar.json), with coverage for teacher, attendance, platform, plans, authentication, parent and landing-page copy. The locale store also translates embedded phrases and common fallback words so newly rendered hard-coded UI does not remain entirely English.
+- Translation catalogues are maintained explicitly in [`resources/lang/en.json`](../resources/lang/en.json) and [`resources/lang/ar.json`]. They now contain 258 matching English/Arabic keys, including the teacher attendance desk. The locale store translates embedded phrases and common fallback words for legacy UI.
 - Platform overview API is protected independently of tenant membership; ordinary academy users receive a forbidden response.
 - Complete product prompt, architecture, database design, security rules and phased plan are tracked in `docs/`.
 
@@ -53,14 +55,14 @@ For moving the project to another device, start with [`CONTINUATION_HANDOFF.md`]
 
 - Runtime database: XAMPP MariaDB/MySQL at `127.0.0.1:3306`, database `academy_management`, accessible in phpMyAdmin.
 - Automated test database: separate MySQL database `academy_management_test`; SQLite is not used.
-- Database migrations: all applied through `2026_11_06_000012_create_parent_access_links_table`.
+- Database migrations: all applied through `2026_11_06_000014_create_student_cards_table`.
 - Backend: 27 tests, 162 assertions passing on MySQL.
-- Frontend: Vue TypeScript check and Vite production build passing (2,161 modules; 310.96 kB main JS / 105.08 kB gzip).
+- Frontend: Vue TypeScript check and Vite production build passing (2,166 modules; latest build 332.79 kB main JS / 111.13 kB gzip).
 - Composer audit: no known advisories at the last audit.
 - Visual screenshot QA: pending because the current automation environment exposed no browser surface.
 
 ## Next safe implementation step
 
-Run a browser-based Arabic/English route audit first. The catalogue and live fallback translator are in place, but remaining hard-coded phrases should be converted to explicit `locale.tr(...)` calls and visually checked. Then continue teacher operations with richer guardian management, imports and student cards.
+Continue Phase 3 attendance hardening with idempotent processing and correction history. Automated authorization/isolation coverage remains pending for bulk archival, staged imports and student cards; browser-based RTL visual QA is also still open. The recent student-card change passed Vue typechecking/build and PHP syntax checks; no tests were run in this turn.
 
 Start every future session by reading `CURRENT_STATUS.md`, `IMPLEMENTATION_PLAN.md`, `SECURITY.md` and the relevant part of `MASTER_PRODUCT_PROMPT.md`.

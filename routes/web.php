@@ -10,6 +10,8 @@ use App\Http\Controllers\EmailVerificationController;
 use App\Http\Controllers\InvitationController;
 use App\Http\Controllers\PlatformAdminController;
 use App\Http\Controllers\StudentController;
+use App\Http\Controllers\StudentCardController;
+use App\Http\Controllers\StudentImportController;
 use App\Http\Controllers\TeamController;
 use App\Http\Controllers\TeachingGroupController;
 use App\Http\Controllers\SubscriptionController;
@@ -59,8 +61,16 @@ Route::prefix('api')->group(function (): void {
         Route::post('/branches/{branch}/select', [BranchController::class, 'select']);
         Route::get('/dashboard', DashboardController::class)->middleware('branch');
         Route::middleware('branch')->prefix('students')->group(function (): void {
+            Route::post('/cards/issue', [StudentCardController::class, 'issue']);
+            Route::post('/cards/revoke', [StudentCardController::class, 'revoke']);
+            Route::get('/import-template', [StudentImportController::class, 'template']);
+            Route::post('/imports', [StudentImportController::class, 'store']);
+            Route::get('/imports/{publicId}', [StudentImportController::class, 'show']);
+            Route::post('/imports/{publicId}/commit', [StudentImportController::class, 'commit']);
+            Route::get('/imports/{publicId}/errors', [StudentImportController::class, 'errors']);
             Route::get('/', [StudentController::class, 'index']);
             Route::post('/', [StudentController::class, 'store']);
+            Route::post('/bulk-archive', [StudentController::class, 'bulkArchive']);
             Route::patch('/{publicId}', [StudentController::class, 'update']);
             Route::post('/{publicId}/archive', [StudentController::class, 'archive']);
         });
