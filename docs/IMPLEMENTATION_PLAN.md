@@ -46,12 +46,14 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - [x] Responsive teacher attendance desk connected to live session and scanner APIs.
 - [x] Session closure automatically finalises unscanned active group students as absent and exposes status summaries.
 - [x] Manual bulk attendance fallback for scanner outages and forgotten cards.
-- [ ] Idempotent attendance processing and duplicate feedback.
-- [ ] Session closure/absence job, corrections and reports.
+- [x] Idempotent attendance processing and duplicate feedback for scanner retries and repeated session closure.
+- [x] Attendance status correction history and branch-scoped correction endpoint.
+- [ ] Session closure/absence job and richer reports.
 - [ ] Authorised-device offline queue with explicit pending state.
 
 ## Phase 4 — examinations and performance
 
+- [x] Initial branch-scoped exam creation/listing with subject, date, total marks, notes and draft status.
 - [ ] Exam targeting and expected participants.
 - [ ] Physical exam attendance and keyboard-first marks entry/import.
 - [ ] Draft/review/publish/lock workflow with correction audit.
@@ -143,3 +145,15 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - 2026-11-06: implemented permission-gated bulk student archival with page selection, server-resolved branch/organisation scoping, a 100-student request limit and one audit event per changed student. Vue typecheck/Vite build and PHP syntax checks pass (2,161 modules; 317.70 kB main JS / 106.94 kB gzip). Automated authorization/isolation tests were not run, so the roadmap item remains unchecked pending that verification.
 
 - 2026-11-06: added private CSV/XLSX student import staging, per-row validation preview, explicit commit, 100-row queue processing with progress, and a formula-safe CSV error report. Migration 2026_11_06_000013 is applied. Vue typecheck/Vite build and PHP syntax checks pass (2,163 modules; 328.71 kB main JS / 109.78 kB gzip). Automated authorization/isolation tests were not run, so the checklist item remains unchecked pending verification.
+- 2026-11-06: added migration `000015` for attendance correction history. Scanner and manual status changes now preserve from/to status, actor, method and centre scope; `/api/attendance/sessions/{id}/corrections` returns the history. MySQL feature coverage passes with 27 tests and 168 assertions; Vue/Vite build passes (2,166 modules; 333.46 kB main JS / 111.19 kB gzip).
+- 2026-11-06: made scanner duplicate detection transaction-safe and repeated attendance-session closure idempotent. Regression coverage now passes with 27 tests and 170 assertions.
+- 2026-11-06: refined the teacher student registration/editing modal so the header remains fixed and scrolling is confined to the form body; production build passes after the UI adjustment.
+- 2026-11-06: upgraded shared native dropdown styling across forms, filters, teacher tools and modals with accessible option menus, custom chevrons, focus states and RTL alignment; production build passes (2,166 modules; 333.46 kB main JS / 111.19 kB gzip).
+- 2026-11-07: replaced the browser-native option popup with custom in-app dropdown menus across rendered selects; menus now provide selected states, hover/focus styling, keyboard activation, outside-click closing, scroll limits and RTL alignment. Production build passes (2,166 modules; 335.59 kB main JS / 111.79 kB gzip).
+- 2026-11-07: added migration `000016`, branch-scoped examination API and a working teacher exams screen at `/teacher/exams`. Teachers can create draft assessments and view existing exams; Vue/Vite build passes (2,168 modules; 340.74 kB main JS / 112.92 kB gzip).
+- 2026-11-07: removed the duplicate Quick Access links from the teacher sidebar and verified the frontend build remains passing.
+- 2026-11-07: generalized fixed modal headers and isolated scrolling bodies across centre, academic, attendance, exam, import, team, audit and card-print dialogs; production build passes (2,168 modules; 340.78 kB main JS / 112.94 kB gzip).
+- 2026-11-07: polished long custom dropdown lists with themed thin scrollbars and hover feedback; production build passes (2,168 modules; 340.78 kB main JS / 112.94 kB gzip).
+- 2026-11-07: added visible `:focus-visible` styling to custom dropdown triggers; production build passes.
+- 2026-11-07: added `ExaminationTest` coverage for draft creation, subject linkage and branch-scoped listing; the test passes with 8 assertions.
+- 2026-11-07: full MySQL suite reverified after the exam workflow: 28 tests and 178 assertions pass.

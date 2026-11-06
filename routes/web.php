@@ -17,6 +17,7 @@ use App\Http\Controllers\TeachingGroupController;
 use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ParentAccessLinkController;
+use App\Http\Controllers\ExaminationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api')->group(function (): void {
@@ -53,8 +54,13 @@ Route::prefix('api')->group(function (): void {
             Route::post('/sessions', [AttendanceController::class, 'store']);
             Route::post('/sessions/{sessionId}/scan', [AttendanceController::class, 'scan']);
             Route::get('/sessions/{sessionId}/report', [AttendanceController::class, 'report']);
+            Route::get('/sessions/{sessionId}/corrections', [AttendanceController::class, 'corrections']);
             Route::put('/sessions/{sessionId}/records', [AttendanceController::class, 'bulkMark']);
             Route::post('/sessions/{sessionId}/close', [AttendanceController::class, 'close']);
+        });
+        Route::middleware('branch')->prefix('examinations')->group(function (): void {
+            Route::get('/', [ExaminationController::class, 'index']);
+            Route::post('/', [ExaminationController::class, 'store']);
         });
         Route::get('/branches', [BranchController::class, 'index']);
         Route::post('/branches', [BranchController::class, 'store']);

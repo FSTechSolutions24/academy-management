@@ -86,6 +86,7 @@ onUnmounted(stopPolling)
       <span class="eyebrow">{{locale.tr('STUDENT DATA')}}</span>
       <h2 id="student-import-title">{{locale.tr('Import students from a spreadsheet')}}</h2>
       <p>{{locale.tr('Upload a CSV or XLSX file. Review every row before importing valid records into this centre.')}}</p>
+      <div class="modal-scroll-body">
       <p class="import-required-columns">{{locale.tr('Required columns: name_ar, guardian_name, guardian_phone. Optional columns can be left blank.')}}</p>
 
       <a class="import-template-link" href="/api/students/import-template"><Download/>{{locale.tr('Download the CSV template')}}</a>
@@ -115,6 +116,7 @@ onUnmounted(stopPolling)
         </div>
       </template>
       <div v-if="error" class="form-error">{{error}}</div>
+      </div>
     </section>
   </div>
 </template>

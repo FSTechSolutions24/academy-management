@@ -96,8 +96,11 @@ class StudentManagementTest extends TestCase
         $session = $this->actingAs($owner)->postJson('/api/attendance/sessions', ['teaching_group_id' => $group->id, 'session_date' => today()->toDateString()])->assertCreated()->json('session');
         $this->actingAs($owner)->postJson('/api/attendance/sessions/'.$session['id'].'/scan', ['student_code' => 'STU-ATT-1'])->assertOk()->assertJsonPath('duplicate', false);
         $this->actingAs($owner)->postJson('/api/attendance/sessions/'.$session['id'].'/scan', ['student_code' => 'STU-ATT-1'])->assertOk()->assertJsonPath('duplicate', true);
+        $this->actingAs($owner)->postJson('/api/attendance/sessions/'.$session['id'].'/scan', ['student_code' => 'STU-ATT-1', 'status' => 'late'])->assertOk()->assertJsonPath('duplicate', true);
+        $this->actingAs($owner)->getJson('/api/attendance/sessions/'.$session['id'].'/corrections')->assertOk()->assertJsonCount(1, 'corrections')->assertJsonPath('corrections.0.from_status', 'present')->assertJsonPath('corrections.0.to_status', 'late');
         $this->actingAs($owner)->putJson('/api/attendance/sessions/'.$session['id'].'/records', ['records' => [['student_id' => $absent->id, 'status' => 'late']]])->assertOk()->assertJsonPath('updated', 1);
         $this->actingAs($owner)->postJson('/api/attendance/sessions/'.$session['id'].'/close')->assertOk();
+        $this->actingAs($owner)->postJson('/api/attendance/sessions/'.$session['id'].'/close')->assertOk()->assertJsonPath('already_closed', true);
         $this->assertDatabaseCount('attendance_records', 2);
         $this->assertDatabaseHas('attendance_records', ['student_id' => $absent->id, 'status' => 'late', 'method' => 'manual']);
     }

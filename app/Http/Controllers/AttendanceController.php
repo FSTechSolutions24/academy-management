@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\AttendanceSession;
+use App\Models\AttendanceCorrection;
 use App\Models\Student;
 use App\Models\StudentCard;
 use App\Services\AuditLogger;
@@ -52,9 +53,17 @@ class AttendanceController extends Controller
             }
         }
         abort_unless($student, 404, 'Student is not enrolled in this group.');
-        $duplicate = $session->records()->where('student_id', $student->id)->exists();
-        $record = DB::transaction(function () use ($session, $student, $data, $request) {
-            return $session->records()->updateOrCreate(['student_id' => $student->id], ['recorded_by' => $request->user()->id, 'status' => $data['status'] ?? 'present', 'recorded_at' => now(), 'method' => 'scanner']);
+        $duplicate = false;
+        $record = DB::transaction(function () use ($session, $student, $data, $request, $branch, &$duplicate) {
+            $nextStatus = $data['status'] ?? 'present';
+            $record = $session->records()->where('student_id', $student->id)->lockForUpdate()->first();
+            $previousStatus = $record?->status;
+            $duplicate = $record !== null;
+            $record = $session->records()->updateOrCreate(['student_id' => $student->id], ['recorded_by' => $request->user()->id, 'status' => $nextStatus, 'recorded_at' => now(), 'method' => 'scanner']);
+            if ($previousStatus && $previousStatus !== $nextStatus) {
+                $this->logCorrection($session, $record, $previousStatus, $nextStatus, 'scanner', $request->user()->id, $branch->id);
+            }
+            return $record;
         });
 
         return response()->json(['duplicate' => $duplicate, 'record' => $record->load('student:id,student_code,name_ar,name_en')]);
@@ -68,6 +77,16 @@ class AttendanceController extends Controller
         return response()->json(['session' => $session, 'summary' => $session->records()->select('status', DB::raw('count(*) as total'))->groupBy('status')->pluck('total', 'status')]);
     }
 
+    public function corrections(int $sessionId, Request $request, BranchContext $branches, PermissionService $permissions): JsonResponse
+    {
+        abort_unless($permissions->has($request->attributes->get('membership'), 'view_attendance'), 403);
+        $branch = $branches->get();
+        $session = AttendanceSession::where('branch_id', $branch->id)->whereKey($sessionId)->firstOrFail();
+        $corrections = AttendanceCorrection::where('branch_id', $branch->id)->where('attendance_session_id', $session->id)->with(['student:id,student_code,name_ar,name_en', 'changedBy:id,name'])->latest('id')->get();
+
+        return response()->json(['corrections' => $corrections]);
+    }
+
     public function bulkMark(int $sessionId, Request $request, BranchContext $branches, PermissionService $permissions): JsonResponse
     {
         abort_unless($permissions->has($request->attributes->get('membership'), 'record_attendance'), 403);
@@ -77,13 +96,34 @@ class AttendanceController extends Controller
         $enrolled = $session->group->students()->wherePivot('status', 'active')->pluck('students.id')->all();
         $invalid = collect($data['records'])->pluck('student_id')->diff($enrolled);
         abort_if($invalid->isNotEmpty(), 422, 'One or more students are not enrolled in this group.');
-        DB::transaction(function () use ($data, $session, $request): void {
+        $branch = $branches->get();
+        DB::transaction(function () use ($data, $session, $request, $branch): void {
             foreach ($data['records'] as $item) {
-                $session->records()->updateOrCreate(['student_id' => $item['student_id']], ['recorded_by' => $request->user()->id, 'status' => $item['status'], 'recorded_at' => now(), 'method' => 'manual']);
+                $record = $session->records()->where('student_id', $item['student_id'])->lockForUpdate()->first();
+                $previousStatus = $record?->status;
+                $record = $session->records()->updateOrCreate(['student_id' => $item['student_id']], ['recorded_by' => $request->user()->id, 'status' => $item['status'], 'recorded_at' => now(), 'method' => 'manual']);
+                if ($previousStatus && $previousStatus !== $item['status']) {
+                    $this->logCorrection($session, $record, $previousStatus, $item['status'], 'manual', $request->user()->id, $branch->id);
+                }
             }
         });
 
         return response()->json(['message' => 'Attendance saved.', 'updated' => count($data['records'])]);
+    }
+
+    private function logCorrection(AttendanceSession $session, $record, string $from, string $to, string $method, int $userId, int $branchId): void
+    {
+        AttendanceCorrection::create([
+            'organization_id' => $session->organization_id,
+            'branch_id' => $branchId,
+            'attendance_session_id' => $session->id,
+            'attendance_record_id' => $record->id,
+            'student_id' => $record->student_id,
+            'changed_by' => $userId,
+            'from_status' => $from,
+            'to_status' => $to,
+            'method' => $method,
+        ]);
     }
 
     public function close(int $sessionId, Request $request, BranchContext $branches, PermissionService $permissions, AuditLogger $audit): JsonResponse
@@ -91,6 +131,9 @@ class AttendanceController extends Controller
         abort_unless($permissions->has($request->attributes->get('membership'), 'record_attendance'), 403);
         $branch = $branches->get();
         $session = AttendanceSession::where('branch_id', $branch->id)->whereKey($sessionId)->firstOrFail();
+        if ($session->status === 'closed') {
+            return response()->json(['message' => 'Attendance session already closed.', 'already_closed' => true]);
+        }
         DB::transaction(function () use ($session, $request): void {
             $studentIds = $session->group->students()->wherePivot('status', 'active')->pluck('students.id');
             $existingIds = $session->records()->pluck('student_id');

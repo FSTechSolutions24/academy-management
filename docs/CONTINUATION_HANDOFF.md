@@ -38,7 +38,8 @@ If the database is empty, use the project’s existing seeders rather than manua
 - Invitation acceptance, permission exceptions and audit history.
 - Teacher workspace with a branch-scoped student directory, registration/editing, guardian contact management for up to five linked guardians, primary-contact selection and archival.
 - Teaching groups, enrolments, recurring schedules and overlap validation.
-- Attendance sessions, scanner records, duplicate-safe scans, closure/absence finalisation and manual bulk marking.
+- Attendance sessions, scanner records, duplicate-safe scans, closure/absence finalisation, manual bulk marking and branch-scoped correction history.
+- Initial teacher examination workflow at `/teacher/exams`, including branch-scoped draft creation and listing.
 - Parent access links with hashed, expiring and revocable tokens plus a bilingual parent portal.
 - Platform-admin console with tenant, identity, security, support and plan settings sections.
 - Starter, Growth and Academy subscription plans with centre/student/staff/group limits.
@@ -47,9 +48,9 @@ If the database is empty, use the project’s existing seeders rather than manua
 
 ## Current verification baseline
 
-- MySQL backend suite: 27 tests, 162 assertions passing.
+- MySQL backend suite: 28 tests, 178 assertions passing.
 - Vue typecheck and Vite production build: passing, 2,166 modules.
-- Latest frontend output: 332.79 kB main JS, 111.13 kB gzip.
+- Latest frontend output: 333.46 kB main JS, 111.19 kB gzip.
 - Composer audit: no known advisories at the last check.
 - Browser screenshot QA is still pending because the previous environment had no browser surface.
 
@@ -57,8 +58,8 @@ If the database is empty, use the project’s existing seeders rather than manua
 
 1. Finish the translation audit page by page. Replace remaining hard-coded template strings with `locale.tr(...)` where practical, and add every user-facing phrase to both JSON files. Keep API values, names and codes untouched. Verify Arabic text, placeholders, modals and RTL spacing in a real browser.
 2. Complete teacher operations: staged CSV/XLSX import is implemented with preview, queued progress and formula-safe error CSV; bulk archival, imports and student cards still need authorization/isolation tests. Student cards now support reissue/revocation, hashed tokens, Code 128 A4 print/save-as-PDF and attendance scan lookup.
-3. Complete attendance production workflow: idempotency/correction history, reports, background closure jobs and an authorised-device offline queue.
-4. Build examinations and performance: exam targeting, keyboard-first marks entry/import, draft/review/publish/lock states, analytics and early warnings.
+3. Complete attendance production workflow: correction permissions, richer reports, background closure jobs and an authorised-device offline queue. Scanner duplicate handling and repeated closure are now idempotent; correction history is implemented.
+4. Extend examinations and performance: exam targeting, keyboard-first marks entry/import, draft/review/publish/lock states, analytics and early warnings. Initial draft exam creation/listing is implemented.
 5. Finish parent communications: performance detail page, WhatsApp consent/templates/queue/retry/delivery log.
 6. Build finance and subscription operations: fees, invoices, instalments, receipts, refunds, expenses, usage metering, entitlement enforcement and super-admin lifecycle actions.
 7. Add exports/reports, Horizon/Redis deployment guidance, backups, monitoring, accessibility/performance testing and the final security/acceptance gates.

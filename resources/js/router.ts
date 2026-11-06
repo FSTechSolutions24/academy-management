@@ -13,6 +13,7 @@ import TeacherWorkspaceView from './views/TeacherWorkspaceView.vue'
 import PlatformSettingsView from './views/PlatformSettingsView.vue'
 import TeacherAttendanceView from './views/TeacherAttendanceView.vue'
 import ParentPortalView from './views/ParentPortalView.vue'
+import TeacherExamsView from './views/TeacherExamsView.vue'
 
 const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/', component: LandingView }, { path: '/login', component: LoginView, meta: { guest: true } },
@@ -26,6 +27,7 @@ const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/admin/settings/plans', component: PlatformSettingsView, meta: { auth: true, platformAdmin: true } },
   { path: '/admin/:section?', component: PlatformAdminView, meta: { auth: true, platformAdmin: true } },
   { path: '/teacher/attendance', component: TeacherAttendanceView, meta: { auth: true } },
+  { path: '/teacher/exams', component: TeacherExamsView, meta: { auth: true } },
   { path: '/teacher/:section?', component: TeacherWorkspaceView, meta: { auth: true } },
 ]})
 router.beforeEach(async (to) => {
