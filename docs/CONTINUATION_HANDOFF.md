@@ -49,6 +49,7 @@ If the database is empty, use the project’s existing seeders rather than manua
 - Encrypted Paymob settings and checkout/callback foundation; real checkout still needs merchant credentials and production verification.
 - English/Arabic locale files at `resources/lang/en.json` and `resources/lang/ar.json` with matching keys, persistent language toggle, explicit attendance desk translations, live DOM translation and RTL layout support.
 - Student operations now include staged CSV/XLSX import with preview/progress/error reporting, teacher-visible import permission, downloadable template and branch-scoped formula-safe CSV export.
+- The teacher Create exam popup now uses a fixed header, independently scrollable form body, stable action footer and explicit field sizing; this prevents the title control from collapsing on the exam creation screen.
 
 ## Current verification baseline
 

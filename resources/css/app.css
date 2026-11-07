@@ -87,3 +87,18 @@ html[dir=rtl] body{font-family:"Tahoma","Arial",sans-serif;text-align:right}html
 /* The teacher sidebar keeps navigation focused on the primary modules. */
 .teacher-shell aside nav>small:nth-of-type(2),.teacher-shell aside nav>small:nth-of-type(2)~a{display:none}
 @import './platform-polish.css';
+
+/* Exam creation modal: keep the header visible and make the form body usable on small screens. */
+.exam-modal{width:min(680px,100%);max-height:calc(100vh - 30px);padding:0;display:flex;flex-direction:column;overflow:hidden}
+.exam-modal .modal-header{position:relative;flex:0 0 auto;padding:34px 34px 0;background:#fff}
+.exam-modal .modal-header .modal-icon{margin:0 0 20px}
+.exam-modal .modal-header .eyebrow{display:block}
+.exam-modal .modal-header h2{margin:10px 0 0}
+.exam-modal .modal-body{min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 34px 34px}
+.exam-modal form input,.exam-modal form select,.exam-modal form textarea{width:100%;min-width:0;min-height:44px;border:1px solid #dfdce7;border-radius:9px;background:#fff;color:#302d43;padding:0 12px;outline:0;font-size:11px}
+.exam-modal form textarea{padding:10px;resize:vertical;font:inherit}
+.exam-modal form input:focus,.exam-modal form select:focus,.exam-modal form textarea:focus{border-color:#6d5dfc;box-shadow:0 0 0 3px #6d5dfc12}
+.exam-modal .modal-actions{position:sticky;bottom:-34px;background:#fff;margin:10px -34px -34px;padding:20px 34px 34px;z-index:2}
+.exam-modal .exam-group-picker{margin:0}
+.exam-modal .modal-close{z-index:3}
+@media(max-width:760px){.exam-modal .modal-header{padding:28px 20px 0}.exam-modal .modal-body{padding:0 20px 20px}.exam-modal .modal-actions{bottom:-20px;margin-left:-20px;margin-right:-20px;padding:20px 20px 20px}}

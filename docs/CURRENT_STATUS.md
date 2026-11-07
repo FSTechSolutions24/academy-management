@@ -72,7 +72,7 @@ For moving the project to another device, start with [`CONTINUATION_HANDOFF.md`]
 - Automated test database: separate MySQL database `academy_management_test`; SQLite is not used.
 - Database migrations: all applied through `2026_11_07_000020_enable_teacher_student_imports`.
 - Backend: 29 tests, 212 assertions passing on MySQL.
-- Latest full verification: all 29 tests pass with 212 assertions; frontend build passes with 2,176 modules (370.64 kB main JS / 120.40 kB gzip).
+- Latest full verification: all 29 tests pass with 212 assertions; frontend build passes with 2,176 modules (370.64 kB main JS / 120.40 kB gzip). The teacher Create exam popup was also repaired with a fixed header, scrollable body and stable footer/input sizing; focused ExaminationTest passes with 30 assertions.
 - Frontend: Vue TypeScript check and Vite production build passing (2,176 modules; latest build 369.62 kB main JS / 120.22 kB gzip).
 - Composer audit: no known advisories at the last audit.
 - Visual screenshot QA: pending because the current automation environment exposed no browser surface.
