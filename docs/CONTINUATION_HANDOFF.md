@@ -16,7 +16,7 @@ AcademyHub is a Laravel 12 + Vue 3 + TypeScript SaaS for Egyptian teaching acade
 - Test database: `academy_management_test` on the same MySQL server.
 - phpMyAdmin can be used to inspect both databases.
 - SQLite is intentionally not used.
-- Latest migrations are applied through `2026_11_07_000020_enable_teacher_student_imports`; this migration adds teacher access to student imports.
+- Latest migrations are applied through `2026_11_07_000022_create_parent_communications_tables`; the latest migrations add platform controls and parent communication outbox records.
 - Copy the ignored `.env` from the development machine only through a secure channel. It contains local database credentials and the seeded demo password; never commit it.
 
 After copying the repository, run:
@@ -63,7 +63,7 @@ If the database is empty, use the project’s existing seeders rather than manua
 ## Remaining work, in priority order
 
 1. Finish the translation audit page by page. Replace remaining hard-coded template strings with `locale.tr(...)` where practical, and add every user-facing phrase to both JSON files. Keep API values, names and codes untouched. Verify Arabic text, placeholders, modals and RTL spacing in a real browser.
-2. Complete teacher operations: staged CSV/XLSX import is implemented with preview, queued progress and formula-safe error CSV; bulk archival, imports and student cards still need authorization/isolation tests. Student cards now support reissue/revocation, hashed tokens, Code 128 A4 print/save-as-PDF and attendance scan lookup.
+2. Complete platform operations: financial dashboard/report, confirmed manual renewal with payment note, account editing and immediate deactivation are implemented; add authorization and audit acceptance coverage. The payment totals represent recorded paid subscription payments; expected monthly/yearly values are run-rate estimates from active plan prices.
 3. Complete attendance production workflow: correction permissions, richer reports, background closure jobs and an authorised-device offline queue. Scanner duplicate handling and repeated closure are now idempotent; correction history is implemented.
 4. Extend examinations and performance: deeper group trends and UI refinements. Teaching-group targeting, keyboard-first marks entry, audited draft/publish/lock controls, secure CSV import, physical exam attendance and the early-warning/subject dashboard are implemented in `/teacher/exams` and `/teacher/performance`.
 5. Finish parent communications: performance detail is now available in the secure parent portal with attendance and published exam summaries; next add WhatsApp consent/templates/queue/retry/delivery log.
@@ -81,4 +81,6 @@ If the database is empty, use the project’s existing seeders rather than manua
 
 ## Recommended first continuation task
 
-Continue by linking the platform academy pagination controls visibly in the admin UI, then add deeper group analytics and WhatsApp parent communications. Automated authorization/isolation coverage is still needed for student imports, bulk archival and cards. Browser-based Arabic/English visual QA is still pending because no browser automation surface is available here.
+Continue with WhatsApp delivery-status callbacks and focused authorization/isolation coverage. The `/teacher/communications` screen provides consent, templates, queueing, retry and outbox history for authorized staff. The platform academy directory now shows its current page, result total and Previous/Next controls, and shares a consistent sidebar with the plans screen. Group performance summaries are also available on the teacher dashboard. Browser-based Arabic/English visual QA is still pending because no browser automation surface is available here.
+
+The teacher performance dashboard now includes branch-scoped group averages, marked learner counts, at-risk counts and recorded attendance rates. Parent WhatsApp now includes branch-scoped consent capture/withdrawal, utility templates, a consent-gated outbox, Cloud API queue worker, failed-message retry and a permission-gated communications screen. Next add the provider delivery-status webhook and authorization/isolation acceptance coverage. Sends require `WHATSAPP_PHONE_ID`, `WHATSAPP_ACCESS_TOKEN`, and `WHATSAPP_API_VERSION`; no provider credentials are configured here. No automated tests were run for these additions.

@@ -174,7 +174,7 @@ class StudentController extends Controller
 
         return [...$student->only(['public_id', 'student_code', 'name_ar', 'name_en', 'date_of_birth', 'gender', 'phone', 'email', 'status']),
             'guardian' => $guardian?->only(['name', 'phone']),
-            'guardians' => $guardians->map(fn (Guardian $guardian) => [...$guardian->only(['name', 'phone', 'whatsapp_phone', 'email']), 'relationship' => $guardian->pivot->relationship, 'is_primary' => (bool) $guardian->pivot->is_primary])->all(),
+            'guardians' => $guardians->map(fn (Guardian $guardian) => [...$guardian->only(['id', 'name', 'phone', 'whatsapp_phone', 'email']), 'relationship' => $guardian->pivot->relationship, 'is_primary' => (bool) $guardian->pivot->is_primary])->all(),
             'level' => $enrollment?->educationalLevel?->only(['id', 'name_ar', 'name_en']),
             'academic_year' => $enrollment?->academicYear?->only(['id', 'name']), 'enrolled_on' => $enrollment?->enrolled_on?->toDateString()];
     }

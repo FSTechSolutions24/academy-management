@@ -26,3 +26,7 @@
 
 24. Stage student imports only in private storage; enforce upload/row/expanded-XLSX limits, reject spreadsheet formulas, scope every batch to the active organisation and branch, recheck import permission on each endpoint, and neutralize formula-leading cells in downloadable error CSVs.
 25. Store only SHA-256 hashes of student-card tokens; return a new token only in the one-time issuance response, revoke the previous token transactionally on reissue, scope issuance/revocation/scans to the active organisation and branch, and audit card lifecycle actions.
+26. Restrict platform account and subscription writes to verified platform administrators; confirm user deactivation and manual renewals in the interface, audit all such writes, require a renewal note, prevent self-deactivation and protect the last active platform administrator, and reject inactive accounts on every web request and login.
+27. Mark complimentary subscription renewals explicitly as gifts, require a reason, force their amount to zero and exclude them from collected-revenue totals.
+28. Treat platform-administrator accounts as protected identities: omit edit/deactivate controls in the user directory and reject every platform user-management write against them on the server.
+29. Require explicit, auditable guardian WhatsApp opt-in before queueing messages; scope templates, consent and delivery records to the active branch, recheck consent in the worker, rate-limit sends/retries and never expose provider credentials.

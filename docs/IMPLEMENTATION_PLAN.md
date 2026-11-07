@@ -61,13 +61,14 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - [x] Physical exam attendance register with targeted-student status updates and teacher UI.
 - [x] Draft/review/publish/lock workflow with permission checks and correction audit.
 - [x] Branch-scoped student risk summary, exam averages and early-warning performance dashboard.
+- [x] Group performance summaries with active enrolment counts, published exam averages, low-average learner counts and recorded attendance rates.
 
 ## Phase 5 — parent portal and communications
 
 - [x] Hashed, expiring, revocable student-scoped parent links.
 - [ ] Responsive Arabic/English performance page.
 - [x] Responsive Arabic/English parent student summary page with secure-link expiry/revocation states.
-- [ ] WhatsApp consent, templates, queue, retry and delivery log.
+- [ ] WhatsApp consent, templates, queue, retry and delivery log (branch-scoped consent/template/outbox APIs, queued Cloud API worker and permission-gated communications UI are implemented; provider status callbacks and acceptance coverage remain).
 
 ## Phase 6 — finance, subscriptions and platform admin
 
@@ -78,7 +79,7 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - [x] Persisted 14-day free-trial subscription and expired-subscription portal lock with owner subscription selection screen.
 - [x] Encrypted Paymob credential storage and protected platform settings API/screen; checkout activation remains dependent on merchant credentials and subscription payment records.
 - [x] Super-admin fixed navigation shell and global organisation, subscription, identity, security and support overview console.
-- [ ] Super-admin plan editing, usage metering and operational write actions.
+- [ ] Super-admin plan editing, usage metering and operational write actions (financial summaries/reports, audited manual renewal, user identity editing and immediate account deactivation are implemented; automated authorization/audit coverage remains).
 
 ## Phase 7 — reports, hardening and release
 
@@ -183,3 +184,4 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - 2026-11-07: fixed duplicate borders on custom dropdowns by removing inherited toolbar/wrapper chrome from `.modern-select-shell`; the student import modal retains required-field guidance, preview validation and CSV template download. Student feature tests pass and frontend build passes (2,176 modules; 370.46 kB main JS / 120.35 kB gzip).
 - 2026-11-07: fixed hidden student import actions by granting the teacher role `import_students` through migration `000020`; added branch-scoped student CSV export with formula-safe cells and exposed both template download and current-student export links in the import modal. Student feature tests pass with 51 assertions; frontend build passes (2,176 modules; 370.64 kB main JS / 120.40 kB gzip).
 - 2026-11-07: repaired the teacher Create exam dialog layout. The modal now has a fixed header, an independently scrollable form body, a stable action footer, and explicit sizing/focus styles for title, subject, date, marks and notes fields. ExaminationTest passes (30 assertions); frontend build passes (2,176 modules; 370.64 kB main JS / 120.40 kB gzip).
+- 2026-11-07: added branch-scoped guardian WhatsApp consent, utility template registration, consent-gated outbox queueing, retryable Cloud API worker and paginated message history. Migration `000022` is applied; Vue build passes with 2,180 modules. Provider delivery callbacks and focused authorization/isolation coverage remain.

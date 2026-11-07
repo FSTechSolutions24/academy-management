@@ -19,7 +19,7 @@
 - Performance: derived aggregates are rebuilt from published results and confirmed attendance; comparisons use percentages.
 - Parent portal: student-scoped access links store token hashes, expiry, revocation and access history.
 - Finance: fee plans create student invoices; invoices own items and payments. Amounts are integer minor units and payment attempts have idempotency keys.
-- Communications: templates, consent records and message deliveries reference organisation and student/guardian context.
+- Communications: branch-scoped templates, current guardian consent, and WhatsApp outbox/delivery records reference organisation and student/guardian context; message parameters are snapshotted and consent is rechecked by the worker before sending.
 - Platform: plans are global; subscriptions, usage and gateway attempts belong to organisations; platform actions are separately audited.
 
 - student_imports and student_import_rows stage private, branch-scoped CSV/XLSX uploads, row validation outcomes and queued processing progress.

@@ -17,6 +17,7 @@ import SubscriptionView from './views/SubscriptionView.vue'
 import TeacherExamsView from './views/TeacherExamsView.vue'
 import TeacherExamAttendanceView from './views/TeacherExamAttendanceView.vue'
 import TeacherPerformanceView from './views/TeacherPerformanceView.vue'
+import TeacherCommunicationsView from './views/TeacherCommunicationsView.vue'
 
 const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/', component: LandingView }, { path: '/login', component: LoginView, meta: { guest: true } },
@@ -34,6 +35,7 @@ const router = createRouter({ history: createWebHistory(), routes: [
   { path: '/teacher/exams/:examId/attendance', component: TeacherExamAttendanceView, meta: { auth: true } },
   { path: '/teacher/exams', component: TeacherExamsView, meta: { auth: true } },
   { path: '/teacher/performance', component: TeacherPerformanceView, meta: { auth: true } },
+  { path: '/teacher/communications', component: TeacherCommunicationsView, meta: { auth: true } },
   { path: '/teacher/:section?', component: TeacherWorkspaceView, meta: { auth: true } },
 ]})
 router.beforeEach(async (to) => {

@@ -18,6 +18,7 @@ use App\Http\Controllers\SubscriptionController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ParentAccessLinkController;
 use App\Http\Controllers\ExaminationController;
+use App\Http\Controllers\CommunicationController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('api')->group(function (): void {
@@ -37,6 +38,10 @@ Route::prefix('api')->group(function (): void {
     Route::get('/platform/overview', [PlatformAdminController::class, 'overview'])
         ->middleware(['auth', 'verified', 'platform_admin']);
     Route::middleware(['auth', 'verified', 'platform_admin'])->prefix('platform')->group(function (): void {
+        Route::get('/users', [PlatformAdminController::class, 'users']);
+        Route::patch('/users/{userId}', [PlatformAdminController::class, 'updateUser'])->whereNumber('userId');
+        Route::post('/users/{userId}/deactivate', [PlatformAdminController::class, 'deactivateUser'])->whereNumber('userId');
+        Route::post('/organizations/{organizationPublicId}/renew', [PlatformAdminController::class, 'renewSubscription']);
         Route::get('/plans', [PlatformAdminController::class, 'plans']);
         Route::post('/plans', [PlatformAdminController::class, 'createPlan']);
         Route::patch('/plans/{plan}', [PlatformAdminController::class, 'updatePlan']);
@@ -50,6 +55,15 @@ Route::prefix('api')->group(function (): void {
         Route::middleware('branch')->group(function (): void {
             Route::post('/parent-links', [ParentAccessLinkController::class, 'store']);
             Route::delete('/parent-links/{linkId}', [ParentAccessLinkController::class, 'revoke']);
+        });
+        Route::middleware('branch')->prefix('communications')->group(function (): void {
+            Route::get('/consents', [CommunicationController::class, 'consents']);
+            Route::post('/consents', [CommunicationController::class, 'recordConsent']);
+            Route::get('/templates', [CommunicationController::class, 'templates']);
+            Route::post('/templates', [CommunicationController::class, 'storeTemplate']);
+            Route::post('/messages', [CommunicationController::class, 'queue'])->middleware('throttle:20,1');
+            Route::get('/messages', [CommunicationController::class, 'messages']);
+            Route::post('/messages/{messageId}/retry', [CommunicationController::class, 'retry'])->whereNumber('messageId')->middleware('throttle:10,1');
         });
         Route::middleware('branch')->prefix('attendance')->group(function (): void {
             Route::get('/sessions', [AttendanceController::class, 'sessions']);
@@ -70,6 +84,7 @@ Route::prefix('api')->group(function (): void {
         Route::put('/{examId}/attendance', [ExaminationController::class, 'saveAttendance']);
         Route::post('/{examId}/status', [ExaminationController::class, 'status']);
         Route::get('/performance', [ExaminationController::class, 'performance']);
+        Route::get('/performance/groups', [ExaminationController::class, 'groupPerformance']);
         });
         Route::get('/branches', [BranchController::class, 'index']);
         Route::post('/branches', [BranchController::class, 'store']);

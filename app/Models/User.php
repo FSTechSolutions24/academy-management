@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'email_verified_at',
         'is_platform_admin',
+        'is_active',
     ];
 
     public function organizations(): BelongsToMany
@@ -61,6 +62,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'is_platform_admin' => 'boolean',
+            'is_active' => 'boolean',
             'password' => 'hashed',
         ];
     }

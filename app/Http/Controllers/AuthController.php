@@ -68,7 +68,7 @@ class AuthController extends Controller
         $credentials = $request->validate(['email' => ['required', 'email'], 'password' => ['required', 'string'], 'remember' => ['sometimes', 'boolean']]);
         $remember = (bool) ($credentials['remember'] ?? false);
         unset($credentials['remember']);
-        if (! Auth::attempt($credentials, $remember)) {
+        if (! Auth::attempt([...$credentials, 'is_active' => true], $remember)) {
             return response()->json(['message' => 'The provided credentials are incorrect.'], 422);
         }
         $request->session()->regenerate();
@@ -88,6 +88,6 @@ class AuthController extends Controller
 
     private function userPayload(User $user): array
     {
-        return [...$user->only(['id', 'name', 'email', 'is_platform_admin']), 'verified' => $user->hasVerifiedEmail()];
+        return [...$user->only(['id', 'name', 'email', 'is_platform_admin', 'is_active']), 'verified' => $user->hasVerifiedEmail()];
     }
 }

@@ -45,4 +45,10 @@ return [
         'payment_methods' => array_values(array_filter(array_map('intval', explode(',', (string) env('PAYMOB_PAYMENT_METHODS', ''))))),
     ],
 
+    'whatsapp' => [
+        'phone_id' => env('WHATSAPP_PHONE_ID'),
+        'access_token' => env('WHATSAPP_ACCESS_TOKEN'),
+        'api_version' => env('WHATSAPP_API_VERSION'),
+    ],
+
 ];
