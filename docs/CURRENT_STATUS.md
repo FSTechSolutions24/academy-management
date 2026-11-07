@@ -1,6 +1,6 @@
 # Current development status
 
-Last updated: 2026-11-06 (Africa/Cairo)
+Last updated: 2026-11-07 (Africa/Cairo)
 
 For moving the project to another device, start with [`CONTINUATION_HANDOFF.md`](CONTINUATION_HANDOFF.md). It contains the runtime setup, completed scope, verification baseline and prioritized remaining work.
 
@@ -36,15 +36,20 @@ For moving the project to another device, start with [`CONTINUATION_HANDOFF.md`]
 - Teacher page foundations include useful empty states, quick actions, student filters, attendance scanner launch, weekly schedule and performance placeholders ready for the Phase 2/3 data modules.
 - Working branch-scoped student directory for teachers with search, level filters, server-backed pagination and permission-gated bulk archival. Bulk archive is branch-scoped and creates one audit event per archived student; authorization tests remain pending. Student profiles support up to five guardian contacts, relationship labels, primary-contact selection and removal from the student link.
 - Teacher-authorized student editing and archival now update active enrolments safely and write auditable events.
-- CSV/XLSX student imports support private staging, row-level previews, 100-row queued processing, progress polling and a formula-safe CSV error report. Automated authorization and tenant-isolation tests remain pending.
+- CSV/XLSX student imports support private staging, row-level previews, 100-row queued processing, progress polling, formula-safe CSV error reporting and teacher-visible import permission. The student modal includes required-field guidance, a downloadable template and branch-scoped current-student CSV export. Automated authorization and tenant-isolation tests remain pending.
 - Branch-scoped teaching groups now have academic links, unique centre codes, capacity metadata, active enrolment counts and audited owner/admin creation/listing APIs.
 - Teaching groups now support recurring branch schedules with day/time/mode/room data, overlap conflict validation and teacher-readable schedule APIs.
 - Super-admin commercial settings now include Starter, Growth and Academy plans with centre/student/staff/group limits, editable pricing/features, and encrypted Paymob credential configuration at `/admin/settings/plans`.
+- Super-admins can now add new subscription plans from the plan master screen, including pricing, limits and feature lists.
+- The super-admin sidebar now exposes a direct Plans & payments link to `/admin/settings/plans`.
+- The plan master screen now uses the full platform-admin shell/sidebar, and its add-plan dialog has a responsive two-column form with grouped limits, fixed modal framing and a clear action footer.
+- New academies receive a persisted 14-day Free trial subscription. Once a trial/subscription expires, organisation APIs are locked with HTTP 402 and owners are redirected to `/subscribe` to select a paid plan.
 - Paymob subscription flow now has payment records, checkout-intent/iframe creation, callback HMAC verification and paid-plan activation endpoints; merchant credentials are still required before checkout can be used.
 - Attendance foundation now supports branch/group sessions, permission-checked scanner records, duplicate-safe scans, automatic absence finalisation on close and session reports through `/api/attendance/sessions`.
 - Manual bulk attendance marking is available at `PUT /api/attendance/sessions/{id}/records` for present, late, excused and absent statuses.
 - Attendance corrections are now recorded whenever an existing status changes through scanner or manual marking, with a branch-scoped history endpoint at `GET /api/attendance/sessions/{id}/corrections`.
 - Teacher examinations are now usable at `/teacher/exams`: teachers can load centre subjects, create draft exams with date, mark totals and notes, and see the branch-scoped exam list. The API is protected by `create_examinations` and `view_reports` permissions.
+- Exams now support branch-safe teaching-group targets and an entering-marks API (`GET/PUT /api/examinations/{id}/marks`) with total-mark validation and locked-exam protection. Migration `2026_11_07_000018_add_exam_targets_and_marks` is applied.
 - Added a regression test for teacher draft-exam creation and branch-scoped listing; it passes with 8 assertions.
 - Secure parent access links now use random one-time-displayed tokens stored only as hashes, with expiry, revocation and a privacy-limited student view.
 - Public bilingual parent portal is now available at `/parent/{token}` with a polished responsive summary card, expiry/revocation state and live RTL switching.
@@ -65,14 +70,15 @@ For moving the project to another device, start with [`CONTINUATION_HANDOFF.md`]
 
 - Runtime database: XAMPP MariaDB/MySQL at `127.0.0.1:3306`, database `academy_management`, accessible in phpMyAdmin.
 - Automated test database: separate MySQL database `academy_management_test`; SQLite is not used.
-- Database migrations: all applied through `2026_11_07_000016_create_examinations_table`.
-- Backend: 28 tests, 178 assertions passing on MySQL.
-- Frontend: Vue TypeScript check and Vite production build passing (2,166 modules; latest build 333.46 kB main JS / 111.19 kB gzip).
+- Database migrations: all applied through `2026_11_07_000020_enable_teacher_student_imports`.
+- Backend: 29 tests, 212 assertions passing on MySQL.
+- Latest full verification: all 29 tests pass with 212 assertions; frontend build passes with 2,176 modules (370.64 kB main JS / 120.40 kB gzip).
+- Frontend: Vue TypeScript check and Vite production build passing (2,176 modules; latest build 369.62 kB main JS / 120.22 kB gzip).
 - Composer audit: no known advisories at the last audit.
 - Visual screenshot QA: pending because the current automation environment exposed no browser surface.
 
 ## Next safe implementation step
 
-Continue Phase 3 attendance hardening with correction permissions and richer reporting. Scanner duplicate detection is now transaction-safe and repeated session closure is idempotent. Automated authorization/isolation coverage remains pending for bulk archival, staged imports and student cards; browser-based RTL visual QA is also still open.
+Continue Phase 4 examination workflow with deeper group trends. Subject averages are now available in the performance API and teacher dashboard; physical attendance is linked from the exam list by selecting the active exam again. Student import/export is now visible to teachers with a template download and formula-safe CSV export. CSV marks import is exposed in the teacher UI alongside draft/publish/lock controls, marks entry, class averages and early-warning signals. The public landing page now loads active subscription plans with monthly/yearly pricing. Audit history and the platform academy directory now use bounded server-side pagination/search to remain safe for large organizations. Automated authorization/isolation coverage remains pending for bulk archival, staged imports and student cards; browser-based RTL visual QA is also still open.
 
 Start every future session by reading `CURRENT_STATUS.md`, `IMPLEMENTATION_PLAN.md`, `SECURITY.md` and the relevant part of `MASTER_PRODUCT_PROMPT.md`.

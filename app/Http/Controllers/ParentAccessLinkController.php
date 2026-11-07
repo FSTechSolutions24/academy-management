@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\ParentAccessLink;
+use App\Models\AttendanceRecord;
+use App\Models\ExaminationMark;
 use App\Services\AuditLogger;
 use App\Services\PermissionService;
 use App\Support\BranchContext;
@@ -42,7 +44,17 @@ class ParentAccessLinkController extends Controller
         abort_unless($link && ! $link->revoked_at && $link->expires_at->isFuture() && $link->student->status === 'active', 404);
         $link->update(['last_used_at' => now()]);
         $enrollment = $link->student->enrollments->first();
+        $student = $link->student;
+        $attendanceRecords = AttendanceRecord::with('session.group:id,name_ar,name_en,code')
+            ->where('student_id', $student->id)
+            ->whereHas('session', fn ($query) => $query->where('branch_id', $student->branch_id)->where('status', 'closed'))
+            ->latest('recorded_at')->limit(60)->get();
+        $attendance = ['total' => $attendanceRecords->count(), 'present' => $attendanceRecords->where('status', 'present')->count(), 'late' => $attendanceRecords->where('status', 'late')->count(), 'excused' => $attendanceRecords->where('status', 'excused')->count(), 'absent' => $attendanceRecords->where('status', 'absent')->count()];
+        $results = ExaminationMark::with('examination.subject:id,name_ar,name_en,code')
+            ->where('student_id', $student->id)
+            ->whereHas('examination', fn ($query) => $query->where('branch_id', $student->branch_id)->whereIn('status', ['published', 'locked']))
+            ->latest()->limit(30)->get()->map(fn ($mark) => ['id' => $mark->id, 'title' => $mark->examination->title, 'subject' => $mark->examination->subject?->only(['name_ar', 'name_en', 'code']), 'exam_date' => $mark->examination->exam_date?->toDateString(), 'mark' => $mark->mark, 'total_marks' => $mark->examination->total_marks, 'percentage' => $mark->examination->total_marks > 0 ? round(((float) $mark->mark / $mark->examination->total_marks) * 100, 1) : 0, 'comment' => $mark->comment]);
 
-        return response()->json(['student' => ['name_ar' => $link->student->name_ar, 'name_en' => $link->student->name_en, 'student_code' => $link->student->student_code, 'branch' => $link->student->branch?->only(['name_ar', 'name_en']), 'level' => $enrollment?->educationalLevel?->only(['name_ar', 'name_en']), 'academic_year' => $enrollment?->academicYear?->only(['name'])], 'expires_at' => $link->expires_at->toIso8601String()]);
+        return response()->json(['student' => ['name_ar' => $student->name_ar, 'name_en' => $student->name_en, 'student_code' => $student->student_code, 'branch' => $student->branch?->only(['name_ar', 'name_en']), 'level' => $enrollment?->educationalLevel?->only(['name_ar', 'name_en']), 'academic_year' => $enrollment?->academicYear?->only(['name'])], 'attendance' => $attendance, 'attendance_recent' => $attendanceRecords->take(12)->map(fn ($record) => ['date' => $record->session?->session_date?->toDateString(), 'status' => $record->status, 'group' => $record->session?->group?->only(['name_ar', 'name_en', 'code'])])->values(), 'results' => $results->values(), 'expires_at' => $link->expires_at->toIso8601String()]);
     }
 }

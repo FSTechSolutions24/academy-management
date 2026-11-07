@@ -14,12 +14,17 @@ use Illuminate\Validation\Rule;
 
 class SubscriptionController extends Controller
 {
+    public function publicPlans(): JsonResponse
+    {
+        return response()->json(['plans' => SubscriptionPlan::where('is_active', true)->where('slug', '!=', 'free-trial')->orderBy('position')->get(['id', 'slug', 'name', 'description', 'monthly_price_minor', 'yearly_price_minor', 'centre_limit', 'student_limit', 'staff_limit', 'group_limit', 'currency', 'features', 'is_featured'])]);
+    }
+
     public function status(OrganizationContext $organizations, PaymobService $paymob): JsonResponse
     {
         $organization = $organizations->get();
         $subscription = DB::table('organization_subscriptions')->join('subscription_plans', 'subscription_plans.id', '=', 'organization_subscriptions.subscription_plan_id')->where('organization_id', $organization->id)->whereIn('status', ['active', 'trialing'])->where('ends_at', '>', now())->orderByDesc('ends_at')->first();
 
-        return response()->json(['subscription' => $subscription, 'plans' => SubscriptionPlan::where('is_active', true)->orderBy('position')->get(), 'paymob_available' => $paymob->isConfigured()]);
+        return response()->json(['subscription' => $subscription, 'plans' => SubscriptionPlan::where('is_active', true)->orderByRaw("slug = 'free-trial'")->orderBy('position')->get(), 'paymob_available' => $paymob->isConfigured()]);
     }
 
     public function checkout(Request $request, OrganizationContext $organizations, PermissionService $permissions, PaymobService $paymob): JsonResponse

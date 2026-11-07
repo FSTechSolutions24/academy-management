@@ -54,10 +54,13 @@ This file is the resumable source of truth. A checked item is implemented and ve
 ## Phase 4 — examinations and performance
 
 - [x] Initial branch-scoped exam creation/listing with subject, date, total marks, notes and draft status.
-- [ ] Exam targeting and expected participants.
-- [ ] Physical exam attendance and keyboard-first marks entry/import.
-- [ ] Draft/review/publish/lock workflow with correction audit.
-- [ ] Student, group and subject analytics plus early warnings.
+- [x] Exam targeting and expected participants foundation through branch-scoped teaching-group targets.
+- [x] Marks storage/API with total-mark validation and locked-exam protection.
+- [x] Keyboard-first marks entry UI with teaching-group targeting and comments.
+- [x] CSV marks import with targeted-student validation, row-level errors and teacher-facing upload UI.
+- [x] Physical exam attendance register with targeted-student status updates and teacher UI.
+- [x] Draft/review/publish/lock workflow with permission checks and correction audit.
+- [x] Branch-scoped student risk summary, exam averages and early-warning performance dashboard.
 
 ## Phase 5 — parent portal and communications
 
@@ -71,6 +74,8 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - [ ] Fee plans, invoices, instalments, receipts, refunds and expenses.
 - [ ] Plan entitlements, trial lifecycle and Paymob abstraction.
 - [x] Super-admin plan catalogue with Egypt-ready Starter, Growth and Academy limits for centres, students, staff and groups.
+- [x] Super-admin plan creation from the master screen with pricing, limits and feature lists.
+- [x] Persisted 14-day free-trial subscription and expired-subscription portal lock with owner subscription selection screen.
 - [x] Encrypted Paymob credential storage and protected platform settings API/screen; checkout activation remains dependent on merchant credentials and subscription payment records.
 - [x] Super-admin fixed navigation shell and global organisation, subscription, identity, security and support overview console.
 - [ ] Super-admin plan editing, usage metering and operational write actions.
@@ -157,3 +162,23 @@ This file is the resumable source of truth. A checked item is implemented and ve
 - 2026-11-07: added visible `:focus-visible` styling to custom dropdown triggers; production build passes.
 - 2026-11-07: added `ExaminationTest` coverage for draft creation, subject linkage and branch-scoped listing; the test passes with 8 assertions.
 - 2026-11-07: full MySQL suite reverified after the exam workflow: 28 tests and 178 assertions pass.
+- 2026-11-07: added migration `000017` for the Free trial plan and persisted organisation subscriptions, subscription enforcement middleware, `/subscribe` owner plan-selection screen and super-admin plan creation. Existing platform-admin tests pass; frontend build passes (2,170 modules; 346.02 kB main JS / 114.16 kB gzip).
+- 2026-11-07: added migration `000018` for exam teaching-group targets and marks. Exam APIs now return targets/mark counts and support validated branch-scoped mark entry while preventing changes to locked exams. Examination feature coverage passes with 10 assertions; frontend build passes (2,172 modules; 347.30 kB main JS / 114.54 kB gzip).
+- 2026-11-07: exposed the Plans & payments master screen directly in the super-admin sidebar; frontend build passes (2,170 modules; 346.06 kB main JS / 114.18 kB gzip).
+- 2026-11-07: polished the plan master screen with a shared platform sidebar and rebuilt the add-plan modal layout; frontend build passes (2,172 modules; 347.22 kB main JS / 114.52 kB gzip).
+- 2026-11-07: upgraded the teacher examinations workspace with teaching-group targeting, a branch-scoped marks table, Enter-to-next keyboard navigation and saveable mark/comment rows. The teacher sidebar now appears across all `/teacher/*` routes. MySQL suite passes with 28 tests and 180 assertions; frontend build passes (2,172 modules; 351.10 kB main JS / 115.57 kB gzip).
+- 2026-11-07: expanded the secure parent portal with attendance summaries, recent session status, published exam results, percentages and progress cards. Data remains token-, student- and branch-scoped; parent feature coverage now verifies the expanded payload. MySQL suite passes with 28 tests and 188 assertions; frontend build passes (2,172 modules; 354.06 kB main JS / 116.35 kB gzip).
+- 2026-11-07: completed exam lifecycle controls with audited publish and lock actions, permission-gated status transitions, locked-mark protection and teacher-facing status buttons. MySQL suite passes with 28 tests and 193 assertions; frontend build passes (2,172 modules; 356.41 kB main JS / 117.10 kB gzip).
+- 2026-11-07: added `/api/examinations/performance` and a teacher Performance dashboard with class averages, exam trend bars and attendance/low-mark early warnings. MySQL suite passes with 28 tests and 200 assertions; frontend build passes (2,174 modules; 360.02 kB main JS / 117.93 kB gzip).
+- 2026-11-07: added secure CSV marks import at `POST /api/examinations/{id}/marks/import`; imports are branch-scoped, limited to targeted students, reject invalid marks with row-level errors and cannot modify locked exams. MySQL suite passes with 28 tests and 203 assertions.
+- 2026-11-07: added a live public pricing section to the landing page with active plan catalogue data, monthly/yearly billing toggle, savings labels, featured-plan treatment, plan limits, feature lists and registration CTAs. Frontend build passes (2,174 modules; 362.66 kB main JS / 118.41 kB gzip); MySQL suite remains green at 28 tests and 203 assertions.
+- 2026-11-07: fixed pricing toggle values being reverted by the legacy DOM translation observer; dynamic pricing headings are now excluded from that compatibility pass and remain Vue-reactive. Frontend build passes (2,174 modules; 362.84 kB main JS / 118.53 kB gzip).
+- 2026-11-07: upgraded organization audit history to server-side pagination and search with bounded `per_page` values, total/page metadata and preserved event, actor and centre filters. The modal now includes search and previous/next controls; all 28 tests and 203 assertions remain green, and the frontend build passes (2,174 modules; 363.74 kB main JS / 118.83 kB gzip).
+- 2026-11-07: upgraded the platform academy directory API with server-side search, bounded pagination and total/page metadata while preserving platform-admin-only access. Added regression coverage; MySQL suite passes with 29 tests and 208 assertions, and frontend build passes (2,174 modules; 364.03 kB main JS / 118.93 kB gzip).
+- 2026-11-07: exposed marks CSV import in the teacher exam workspace with file selection, locked-exam protection, imported-count feedback and row-level error display. MySQL suite remains green at 29 tests and 208 assertions; frontend build passes (2,174 modules; 365.86 kB main JS / 119.41 kB gzip).
+- 2026-11-07: added migration `000019` and branch-scoped physical exam attendance APIs (`GET/PUT /api/examinations/{id}/attendance`) with targeted-student validation, permission checks and locked-exam protection. MySQL suite passes with 29 tests and 212 assertions; frontend build remains passing.
+- 2026-11-07: added the teacher physical exam attendance register at `/teacher/exams/{examId}/attendance` with status buttons, summary cards, locked-exam state and one-click save. Frontend build passes (2,176 modules; 369.62 kB main JS / 120.22 kB gzip).
+- 2026-11-07: linked the physical exam attendance register into the exam list workflow; selecting an exam loads marks, and selecting the active exam again opens its attendance register. Frontend build passes (2,176 modules; 369.69 kB main JS / 120.26 kB gzip).
+- 2026-11-07: expanded the branch-scoped performance report with subject averages and result counts, and added a Subject trends card to the teacher Performance page. Examination coverage now passes with 30 assertions; frontend build passes (2,176 modules; 370.46 kB main JS / 120.35 kB gzip).
+- 2026-11-07: fixed duplicate borders on custom dropdowns by removing inherited toolbar/wrapper chrome from `.modern-select-shell`; the student import modal retains required-field guidance, preview validation and CSV template download. Student feature tests pass and frontend build passes (2,176 modules; 370.46 kB main JS / 120.35 kB gzip).
+- 2026-11-07: fixed hidden student import actions by granting the teacher role `import_students` through migration `000020`; added branch-scoped student CSV export with formula-safe cells and exposed both template download and current-student export links in the import modal. Student feature tests pass with 51 assertions; frontend build passes (2,176 modules; 370.64 kB main JS / 120.40 kB gzip).

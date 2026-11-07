@@ -31,6 +31,7 @@ class StudentManagementTest extends TestCase
         ])->assertCreated()->assertJsonPath('student.student_code', 'STU-000001')->assertJsonPath('student.guardian.name', 'Ahmed Hassan');
 
         $this->getJson('/api/students?search=Mariam')->assertOk()->assertJsonCount(1, 'students')->assertJsonPath('pagination.total', 1);
+        $this->actingAs($teacher)->get('/api/students/export')->assertOk()->assertHeader('content-type', 'text/csv; charset=UTF-8');
         $this->assertDatabaseHas('enrollments', ['branch_id' => $branch->id, 'status' => 'active']);
         $this->assertDatabaseHas('audit_logs', ['organization_id' => $organization->id, 'branch_id' => $branch->id, 'event' => 'student.created']);
     }

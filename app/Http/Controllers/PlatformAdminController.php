@@ -15,12 +15,20 @@ use Illuminate\Support\Facades\DB;
 
 class PlatformAdminController extends Controller
 {
-    public function overview(): JsonResponse
+    public function overview(Request $request): JsonResponse
     {
-        $organizations = Organization::query()
+        $data = $request->validate(['search' => ['sometimes', 'nullable', 'string', 'max:120'], 'page' => ['sometimes', 'integer', 'min:1'], 'per_page' => ['sometimes', 'integer', 'min:10', 'max:50']]);
+        $organizationQuery = Organization::query();
+        if ($data['search'] ?? null) {
+            $search = trim($data['search']);
+            $organizationQuery->where(fn ($query) => $query->where('name_en', 'like', "%{$search}%")->orWhere('name_ar', 'like', "%{$search}%")->orWhere('email', 'like', "%{$search}%")->orWhere('city', 'like', "%{$search}%")->orWhere('public_id', 'like', "%{$search}%"));
+        }
+        $organizationCount = (clone $organizationQuery)->count();
+        $organizationPaginator = $organizationQuery
             ->withCount(['branches', 'users'])
             ->latest()
-            ->get()
+            ->paginate($data['per_page'] ?? 25, ['*'], 'page', $data['page'] ?? 1);
+        $organizations = $organizationPaginator->getCollection()
             ->map(fn (Organization $organization): array => [
                 ...$organization->only(['public_id', 'name_ar', 'name_en', 'email', 'city', 'subscription_status']),
                 'branches_count' => $organization->branches_count,
@@ -36,7 +44,7 @@ class PlatformAdminController extends Controller
 
         return response()->json([
             'stats' => [
-                'organizations' => $organizations->count(),
+                'organizations' => $organizationCount,
                 'active_subscriptions' => (int) ($subscriptionBreakdown['active'] ?? 0),
                 'trial_organizations' => (int) ($subscriptionBreakdown['trial'] ?? 0),
                 'users' => User::count(),
@@ -45,6 +53,7 @@ class PlatformAdminController extends Controller
             ],
             'subscription_breakdown' => $subscriptionBreakdown,
             'organizations' => $organizations,
+            'organizations_pagination' => ['page' => $organizationPaginator->currentPage(), 'last_page' => $organizationPaginator->lastPage(), 'per_page' => $organizationPaginator->perPage(), 'total' => $organizationPaginator->total()],
             'recent_users' => User::query()->latest()->limit(10)->get()
                 ->map(fn (User $user): array => [
                     ...$user->only(['id', 'name', 'email', 'is_platform_admin']),
@@ -57,7 +66,14 @@ class PlatformAdminController extends Controller
 
     public function plans(): JsonResponse
     {
-        return response()->json(['plans' => SubscriptionPlan::query()->orderBy('position')->orderBy('id')->get()]);
+        return response()->json(['plans' => SubscriptionPlan::query()->orderByRaw("slug = 'free-trial'")->orderBy('position')->orderBy('id')->get()]);
+    }
+
+    public function createPlan(Request $request): JsonResponse
+    {
+        $data = $request->validate(['slug' => ['required', 'string', 'max:60', 'alpha_dash', 'unique:subscription_plans,slug'], 'name' => ['required', 'string', 'max:100'], 'description' => ['nullable', 'string', 'max:1000'], 'monthly_price_minor' => ['required', 'integer', 'min:0'], 'yearly_price_minor' => ['nullable', 'integer', 'min:0'], 'centre_limit' => ['nullable', 'integer', 'min:1'], 'student_limit' => ['nullable', 'integer', 'min:1'], 'staff_limit' => ['nullable', 'integer', 'min:1'], 'group_limit' => ['nullable', 'integer', 'min:1'], 'features' => ['nullable', 'array'], 'features.*' => ['string', 'max:160']]);
+        $plan = SubscriptionPlan::create([...$data, 'currency' => 'EGP', 'is_active' => true, 'is_featured' => false, 'position' => ((int) SubscriptionPlan::max('position')) + 1]);
+        return response()->json(['plan' => $plan], 201);
     }
 
     public function updatePlan(Request $request, SubscriptionPlan $plan): JsonResponse

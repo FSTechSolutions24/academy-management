@@ -9,4 +9,8 @@ const api = axios.create({
   },
   withCredentials: true,
 })
+api.interceptors.response.use((response) => response, (error) => {
+  if (error.response?.status === 402 && error.response?.data?.subscription_required && window.location.pathname !== '/subscribe') window.location.assign('/subscribe')
+  return Promise.reject(error)
+})
 export default api

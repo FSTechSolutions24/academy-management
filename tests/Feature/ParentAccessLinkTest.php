@@ -23,7 +23,7 @@ class ParentAccessLinkTest extends TestCase
 
         $link = $this->actingAs($owner)->postJson('/api/parent-links', ['student_id' => $student->public_id, 'expires_in_days' => 7])->assertCreated()->json('link');
         $token = basename(parse_url($link['url'], PHP_URL_PATH));
-        $this->getJson('/api/parent/'.$token)->assertOk()->assertJsonPath('student.student_code', 'STU-PARENT-1');
+        $this->getJson('/api/parent/'.$token)->assertOk()->assertJsonPath('student.student_code', 'STU-PARENT-1')->assertJsonStructure(['attendance' => ['total', 'present', 'late', 'excused', 'absent'], 'attendance_recent', 'results']);
         $this->actingAs($owner)->deleteJson('/api/parent-links/'.$link['id'])->assertOk();
         $this->getJson('/api/parent/'.$token)->assertNotFound();
     }

@@ -3,26 +3,30 @@ import {
   Activity, Bell, Building2, CheckCircle2, CreditCard, KeyRound, LayoutDashboard,
   LifeBuoy, LogOut, Menu, Search, ServerCog, Settings, ShieldCheck, Users, X,
 } from '@lucide/vue'
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../api'
 import BrandLogo from '../components/BrandLogo.vue'
 import { useAuthStore } from '../stores/auth'
 import { useLocaleStore } from '../stores/locale'
 
-const auth=useAuthStore();const locale=useLocaleStore();const route=useRoute();const router=useRouter();const data=ref<any>(null);const loading=ref(true);const menu=ref(false);const search=ref('')
+const auth=useAuthStore();const locale=useLocaleStore();const route=useRoute();const router=useRouter();const data=ref<any>(null);const loading=ref(true);const menu=ref(false);const search=ref('');const academyPage=ref(1)
 const sections=['overview','academies','subscriptions','users','security','support','settings']
 const section=computed(()=>sections.includes(String(route.params.section))?String(route.params.section):'overview')
 const nav=[
   ['overview','Command centre',LayoutDashboard],['academies','Academies',Building2],['subscriptions','Subscriptions',CreditCard],
-  ['users','Users & access',Users],['security','Security & audit',ShieldCheck],['support','Support operations',LifeBuoy],['settings','Platform settings',Settings],
+  ['users','Users & access',Users],['security','Security & audit',ShieldCheck],['settings/plans','Plans & payments',CreditCard],['support','Support operations',LifeBuoy],['settings','Platform settings',Settings],
 ]
 const filteredOrganizations=computed(()=>{const value=search.value.trim().toLowerCase();if(!value)return data.value?.organizations||[];return (data.value?.organizations||[]).filter((item:any)=>[item.name_en,item.name_ar,item.email,item.city].some((field:any)=>String(field||'').toLowerCase().includes(value)))})
 const title=computed(()=>locale.tr(String(nav.find(item=>item[0]===section.value)?.[1]||'Command centre')))
-async function load(){loading.value=true;try{data.value=(await api.get('/platform/overview')).data}finally{loading.value=false}}
+async function load(page=academyPage.value){loading.value=true;try{data.value=(await api.get('/platform/overview',{params:{search:section.value==='academies'?search.value||undefined:undefined,page:section.value==='academies'?page:1,per_page:25}})).data;academyPage.value=data.value.organizations_pagination?.page||page}finally{loading.value=false}}
+function moveAcademyPage(page:number){const meta=data.value?.organizations_pagination;if(meta&&page>=1&&page<=meta.last_page&&!loading.value)load(page)}
 async function logout(){await auth.logout();router.replace('/')}
 function initials(name:string){return name.split(' ').map(part=>part[0]).join('').slice(0,2).toUpperCase()}
 onMounted(load)
+watch(section,()=>{academyPage.value=1;load()});
+let searchTimer: ReturnType<typeof setTimeout> | undefined
+watch(search,()=>{if(section.value!=='academies')return; if(searchTimer)clearTimeout(searchTimer); searchTimer=setTimeout(()=>{academyPage.value=1;load()},300)})
 </script>
 
 <template><div class="app-shell platform-shell">

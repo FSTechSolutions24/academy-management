@@ -41,6 +41,8 @@ class AuthController extends Controller
                 'subscription_status' => 'trial', 'trial_ends_at' => now()->addDays(14),
             ]);
             $roles = app(RoleCatalog::class)->createDefaults($organization);
+            $trialPlan = DB::table('subscription_plans')->where('slug', 'free-trial')->first();
+            if ($trialPlan) DB::table('organization_subscriptions')->insert(['organization_id' => $organization->id, 'subscription_plan_id' => $trialPlan->id, 'status' => 'trialing', 'billing_cycle' => 'trial', 'starts_at' => now(), 'ends_at' => now()->addDays(14), 'created_at' => now(), 'updated_at' => now()]);
             $organization->users()->attach($user->id, ['role' => 'owner', 'role_id' => $roles['owner']->id, 'status' => 'active', 'joined_at' => now(), 'permissions' => json_encode([])]);
             $branch = $organization->branches()->create(['public_id' => (string) Str::ulid(), 'name_ar' => 'المركز الرئيسي', 'name_en' => 'Main centre', 'is_head_office' => true, 'is_active' => true]);
             $organization->academicYears()->create(['branch_id' => $branch->id, 'name' => '2026/2027', 'starts_on' => '2026-09-01', 'ends_on' => '2027-06-30', 'status' => 'active', 'is_active' => true]);

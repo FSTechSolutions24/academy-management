@@ -89,7 +89,7 @@ onUnmounted(stopPolling)
       <div class="modal-scroll-body">
       <p class="import-required-columns">{{locale.tr('Required columns: name_ar, guardian_name, guardian_phone. Optional columns can be left blank.')}}</p>
 
-      <a class="import-template-link" href="/api/students/import-template"><Download/>{{locale.tr('Download the CSV template')}}</a>
+      <div class="import-links"><a class="import-template-link" href="/api/students/import-template"><Download/>{{locale.tr('Download the CSV template')}}</a><a class="import-template-link export-link" href="/api/students/export"><Download/>{{locale.tr('Export current students')}}</a></div>
 
       <form v-if="!importRun" class="import-upload" @submit.prevent="stageFile">
         <label>{{locale.tr('Spreadsheet file')}}

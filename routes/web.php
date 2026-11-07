@@ -32,17 +32,19 @@ Route::prefix('api')->group(function (): void {
     Route::post('/invitations/accept', [InvitationController::class, 'accept'])->middleware('throttle:8,1');
     Route::post('/subscriptions/paymob/callback', [SubscriptionController::class, 'paymobCallback'])->middleware('throttle:30,1')->name('subscriptions.paymob-callback');
     Route::get('/parent/{token}', [ParentAccessLinkController::class, 'show'])->middleware('throttle:30,1');
+    Route::get('/public/plans', [SubscriptionController::class, 'publicPlans'])->middleware('throttle:30,1');
 
     Route::get('/platform/overview', [PlatformAdminController::class, 'overview'])
         ->middleware(['auth', 'verified', 'platform_admin']);
     Route::middleware(['auth', 'verified', 'platform_admin'])->prefix('platform')->group(function (): void {
         Route::get('/plans', [PlatformAdminController::class, 'plans']);
+        Route::post('/plans', [PlatformAdminController::class, 'createPlan']);
         Route::patch('/plans/{plan}', [PlatformAdminController::class, 'updatePlan']);
         Route::get('/paymob-settings', [PlatformAdminController::class, 'paymobSettings']);
         Route::put('/paymob-settings', [PlatformAdminController::class, 'updatePaymobSettings']);
     });
 
-    Route::middleware(['auth', 'verified', 'organization'])->group(function (): void {
+    Route::middleware(['auth', 'verified', 'organization', 'subscription'])->group(function (): void {
         Route::get('/subscriptions', [SubscriptionController::class, 'status']);
         Route::post('/subscriptions/checkout', [SubscriptionController::class, 'checkout'])->middleware('throttle:5,1');
         Route::middleware('branch')->group(function (): void {
@@ -61,6 +63,13 @@ Route::prefix('api')->group(function (): void {
         Route::middleware('branch')->prefix('examinations')->group(function (): void {
             Route::get('/', [ExaminationController::class, 'index']);
             Route::post('/', [ExaminationController::class, 'store']);
+            Route::get('/{examId}/marks', [ExaminationController::class, 'marks']);
+            Route::put('/{examId}/marks', [ExaminationController::class, 'saveMarks']);
+        Route::post('/{examId}/marks/import', [ExaminationController::class, 'importMarks']);
+        Route::get('/{examId}/attendance', [ExaminationController::class, 'attendance']);
+        Route::put('/{examId}/attendance', [ExaminationController::class, 'saveAttendance']);
+        Route::post('/{examId}/status', [ExaminationController::class, 'status']);
+        Route::get('/performance', [ExaminationController::class, 'performance']);
         });
         Route::get('/branches', [BranchController::class, 'index']);
         Route::post('/branches', [BranchController::class, 'store']);
@@ -70,6 +79,7 @@ Route::prefix('api')->group(function (): void {
             Route::post('/cards/issue', [StudentCardController::class, 'issue']);
             Route::post('/cards/revoke', [StudentCardController::class, 'revoke']);
             Route::get('/import-template', [StudentImportController::class, 'template']);
+            Route::get('/export', [StudentController::class, 'export']);
             Route::post('/imports', [StudentImportController::class, 'store']);
             Route::get('/imports/{publicId}', [StudentImportController::class, 'show']);
             Route::post('/imports/{publicId}/commit', [StudentImportController::class, 'commit']);
@@ -101,6 +111,7 @@ Route::prefix('api')->group(function (): void {
         });
         Route::get('/audit-logs', [AuditLogController::class, 'index']);
     });
+    Route::middleware(['auth', 'verified', 'organization'])->get('/subscriptions', [SubscriptionController::class, 'status']);
 });
 
 Route::get('/email/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])

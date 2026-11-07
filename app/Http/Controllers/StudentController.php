@@ -13,9 +13,24 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class StudentController extends Controller
 {
+    public function export(Request $request, BranchContext $branches, PermissionService $permissions): StreamedResponse
+    {
+        abort_unless($permissions->has($request->attributes->get('membership'), 'view_students'), 403);
+        $data = $request->validate(['search' => ['nullable', 'string', 'max:100'], 'level_id' => ['nullable', 'integer'], 'status' => ['nullable', Rule::in(['active', 'inactive', 'archived'])]]);
+        $branch = $branches->get();
+        $query = $branch->students()->with(['guardians', 'enrollments.educationalLevel', 'enrollments.academicYear'])->latest();
+        if ($data['search'] ?? null) { $term = $data['search']; $query->where(fn ($builder) => $builder->where('student_code', 'like', "%{$term}%")->orWhere('name_ar', 'like', "%{$term}%")->orWhere('name_en', 'like', "%{$term}%")); }
+        if ($data['status'] ?? null) $query->where('status', $data['status']);
+        if ($data['level_id'] ?? null) $query->whereHas('enrollments', fn ($builder) => $builder->where('educational_level_id', $data['level_id'])->where('status', 'active'));
+        return response()->streamDownload(function () use ($query): void {
+            $output = fopen('php://output', 'wb'); fputcsv($output, ['student_code', 'name_ar', 'name_en', 'date_of_birth', 'gender', 'phone', 'email', 'guardian_name', 'guardian_phone', 'guardian_email', 'guardian_relationship', 'level', 'academic_year', 'status']);
+            $query->chunkById(500, function ($students) use ($output): void { foreach ($students as $student) { $guardian = $student->guardians->sortByDesc(fn ($item) => $item->pivot->is_primary)->first(); $enrollment = $student->enrollments->first(); fputcsv($output, [$student->student_code, $this->safeCsv($student->name_ar), $this->safeCsv($student->name_en), $student->date_of_birth?->toDateString(), $student->gender, $this->safeCsv($student->phone), $this->safeCsv($student->email), $this->safeCsv($guardian?->name), $this->safeCsv($guardian?->phone), $this->safeCsv($guardian?->email), $guardian?->pivot?->relationship, $this->safeCsv($enrollment?->educationalLevel?->name_en ?? $enrollment?->educationalLevel?->name_ar), $this->safeCsv($enrollment?->academicYear?->name), $student->status]); } }); fclose($output);
+        }, 'academyhub-students.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
     public function index(Request $request, BranchContext $branches, PermissionService $permissions): JsonResponse
     {
         abort_unless($permissions->has($request->attributes->get('membership'), 'view_students'), 403);
@@ -204,4 +219,6 @@ class StudentController extends Controller
             'is_primary' => (bool) $guardian->pivot->is_primary,
         ]])->all();
     }
+
+    private function safeCsv(?string $value): string { $value = (string) $value; return preg_match('/^[\s\p{Zs}]*[=+\-@]/u', $value) ? "'".$value : $value; }
 }
